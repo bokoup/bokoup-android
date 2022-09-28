@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bokoup.customerapp.nav.Screen
 import com.bokoup.customerapp.ui.common.AppScreen
+import com.dgsd.ksol.model.KeyPair
 import kotlinx.coroutines.channels.Channel
 
 @Composable
@@ -17,13 +18,17 @@ fun ApproveScreen(
     viewModel: ApproveViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit,
-    address: String?
+    keyPair: KeyPair?,
 
-) {
-    if (address != null) {
-        LaunchedEffect(key1 = address, Unit) {
-            viewModel.getAppId("GeWRS2Det9da6K2xQw4Fd62Kv3qVQx1E3wsjAqk8DGs1","Promo1")
-            viewModel.getTokenTransaction("GeWRS2Det9da6K2xQw4Fd62Kv3qVQx1E3wsjAqk8DGs1","Promo1", address)
+    ) {
+    if (keyPair != null) {
+        LaunchedEffect(key1 = keyPair.publicKey.toString(), Unit) {
+            viewModel.getAppId("GeWRS2Det9da6K2xQw4Fd62Kv3qVQx1E3wsjAqk8DGs1", "Promo1")
+            viewModel.getTokenTransaction(
+                "GeWRS2Det9da6K2xQw4Fd62Kv3qVQx1E3wsjAqk8DGs1",
+                "Promo1",
+                keyPair.publicKey.toString()
+            )
         }
     }
 
@@ -31,7 +36,15 @@ fun ApproveScreen(
         snackbarHostState = snackbarHostState,
         openDrawer = openDrawer,
         screen = Screen.Approve,
-        content = { ApproveContent(padding = it, appId = viewModel.appId, tokenApiResponse = viewModel.tokenApiResponse, localTransaction = viewModel.localTransaction )  }
+        content = {
+            ApproveContent(
+                padding = it,
+                appId = viewModel.appId,
+                message = viewModel.message,
+                onSwipe = { viewModel.signAndSend(viewModel.localTransaction!!, keyPair!!) },
+                transactionSignature = viewModel.transactionSignature
+            )
+        }
     )
 
 }

@@ -16,6 +16,7 @@ import com.bokoup.customerapp.util.SystemClipboard
 import com.dgsd.ksol.LocalTransactions
 import com.dgsd.ksol.model.KeyPair
 import com.dgsd.ksol.model.LocalTransaction
+import com.dgsd.ksol.model.TransactionSignature
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -29,24 +30,25 @@ class ApproveViewModel @Inject constructor(
     private val tokenRepo: TokenRepo,
 ) : ViewModel() {
     var appId: TokenApiId? by mutableStateOf(null)
-    var tokenApiResponse: TokenApiResponse? by mutableStateOf(null)
+    var message: String? by mutableStateOf(null)
     var localTransaction: LocalTransaction? by mutableStateOf(null)
+    var transactionSignature: TransactionSignature? by mutableStateOf(null)
 
     suspend fun getAppId(mintString: String, promoName: String) = withContext(Dispatchers.IO) {
         appId = tokenRepo.getApiId(mintString, promoName)
     }
 
-    suspend fun getTokenTransaction(mintString: String, promoName: String, address: String) = withContext(Dispatchers.IO) {
-        val result = tokenRepo.getTokenTransaction(mintString, promoName, address)
-        tokenApiResponse = result
-        localTransaction = deserializeTransaction(result.transaction)
-    }
+    suspend fun getTokenTransaction(mintString: String, promoName: String, address: String) =
+        withContext(Dispatchers.IO) {
+            val result = tokenRepo.getTokenTransaction(mintString, promoName, address)
+            message = result.message
+            localTransaction = tokenRepo.deserializeTransaction(result.transaction)
+        }
 
-    fun deserializeTransaction(base64EncodedTransaction: String): LocalTransaction {
-        return LocalTransactions.deserializeTransaction(base64EncodedTransaction)
-    }
-
-    fun signTransaction(localTransaction: LocalTransaction, keyPair: KeyPair): LocalTransaction {
-        return LocalTransactions.sign(localTransaction, keyPair)
+    fun signAndSend(localTransaction: LocalTransaction, keyPair: KeyPair) {
+        viewModelScope.launch(Dispatchers.IO) {
+            transactionSignature = tokenRepo.signAndSend(localTransaction, keyPair)
+            message = null
+        }
     }
 }

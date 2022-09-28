@@ -1,6 +1,7 @@
 package com.bokoup.customerapp.data.net
 
 import android.util.Log
+import com.dgsd.ksol.model.LocalTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient

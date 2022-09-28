@@ -80,7 +80,7 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
         composable(
             route = Screen.Approve.name
         ) {
-            ApproveScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, address = activeKeyPair?.publicKey.toString() )
+            ApproveScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, keyPair = activeKeyPair!! )
         }
         composable(
             route = "${Screen.TokenDetail}/{tokenId}",

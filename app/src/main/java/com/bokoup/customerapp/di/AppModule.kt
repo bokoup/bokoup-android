@@ -10,11 +10,16 @@ import com.bokoup.customerapp.dom.repo.TokenRepo
 import com.bokoup.customerapp.util.QRCodeGenerator
 import com.bokoup.customerapp.util.QRCodeScanner
 import com.bokoup.customerapp.util.SystemClipboard
+import com.dgsd.ksol.LocalTransactions
+import com.dgsd.ksol.SolanaApi
+import com.dgsd.ksol.model.Cluster
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -22,7 +27,7 @@ class AppModule {
     @Provides
     fun provideChainDb(
         @ApplicationContext
-        context : Context
+        context: Context
     ) = Room.databaseBuilder(
         context,
         ChainDb::class.java,
@@ -39,12 +44,28 @@ class AppModule {
     ) = TokenApi()
 
     @Provides
+    fun localTransactions(
+    ) = LocalTransactions
+
+    @Provides
+    fun solanaApi(
+    ) = SolanaApi(Cluster.DEVNET, OkHttpClient.Builder().apply {
+        addInterceptor(interceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        })
+    }.build())
+
+    @Provides
     fun provideTokenRepo(
         tokenDao: TokenDao,
-        tokenApi: TokenApi
+        tokenApi: TokenApi,
+        localTransactions: LocalTransactions,
+        solanaApi: SolanaApi,
     ): TokenRepo = TokenRepoImpl(
         tokenDao = tokenDao,
-        tokenApi = tokenApi
+        tokenApi = tokenApi,
+        localTransactions = localTransactions,
+        solanaApi = solanaApi
     )
 
     @Provides
@@ -70,6 +91,6 @@ class AppModule {
     @Provides
     fun provideSystemClipboard(
         @ApplicationContext
-        context : Context
+        context: Context
     ) = SystemClipboard(context)
 }

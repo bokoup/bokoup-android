@@ -21,7 +21,9 @@ import com.bokoup.customerapp.R
 import com.bokoup.customerapp.data.net.TokenApiId
 import com.bokoup.customerapp.data.net.TokenApiResponse
 import com.bokoup.customerapp.ui.common.SwipeButton
+import com.dgsd.ksol.model.KeyPair
 import com.dgsd.ksol.model.LocalTransaction
+import com.dgsd.ksol.model.TransactionSignature
 
 @Composable
 @ExperimentalMaterialApi
@@ -29,8 +31,9 @@ import com.dgsd.ksol.model.LocalTransaction
 fun ApproveContent(
     padding: PaddingValues,
     appId: TokenApiId?,
-    tokenApiResponse: TokenApiResponse?,
-    localTransaction: LocalTransaction?
+    message: String?,
+    transactionSignature: TransactionSignature?,
+    onSwipe: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -48,14 +51,17 @@ fun ApproveContent(
                 modifier = Modifier.clip(CircleShape)
             )
         }
-        if (tokenApiResponse != null) {
-            Text(text = tokenApiResponse.message, modifier = Modifier.padding(vertical = 16.dp))
+        if (message != null) {
+            Text(text = message, modifier = Modifier.padding(vertical = 16.dp))
             Row(modifier = Modifier.height(64.dp)) {
                 SwipeButton(
                     text = "Approve",
-                    onSwipe = { Log.d("jingus", localTransaction.toString()) })
+                    onSwipe = onSwipe )
             }
 
+        }
+        if (transactionSignature != null) {
+            Text(text = "Confirmed: $transactionSignature", modifier = Modifier.padding(vertical = 16.dp))
         }
     }
 }
