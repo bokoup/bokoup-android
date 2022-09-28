@@ -3,8 +3,7 @@ package com.bokoup.customerapp.ui
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -17,19 +16,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.bokoup.customerapp.R
 import com.bokoup.customerapp.nav.Screen
-import com.example.compose.AppTheme
+import com.bokoup.customerapp.ui.theme.AppTheme
+import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDrawer(
     currentRoute: String,
-    navigateToHome: () -> Unit,
-    navigateToSettings: () -> Unit,
+    navController: NavController,
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -39,16 +40,37 @@ fun AppDrawer(
         )
         NavigationDrawerItem(
             label = { Text(stringResource(Screen.Tokens.title)) },
-            icon = { Icon(Icons.Filled.Home, null) },
+            icon = { Icon(Icons.Filled.Loyalty, null) },
             selected = currentRoute == Screen.Tokens.name,
-            onClick = { navigateToHome(); closeDrawer() },
+            onClick = { navController.navigate(Screen.Tokens.name); closeDrawer() },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
         NavigationDrawerItem(
-            label = { Text(stringResource(id = Screen.Settings.title)) },
-            icon = { Icon(Icons.Filled.Settings, null) },
-            selected = currentRoute == Screen.Settings.name,
-            onClick = { navigateToSettings(); closeDrawer() },
+            label = { Text(stringResource(id = Screen.Wallet.title)) },
+            icon = { Icon(Icons.Filled.Wallet, null) },
+            selected = currentRoute == Screen.Wallet.name,
+            onClick = { navController.navigate(Screen.Wallet.name); closeDrawer() },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+        NavigationDrawerItem(
+            label = { Text(stringResource(id = Screen.Share.title)) },
+            icon = { Icon(Icons.Filled.Share, null) },
+            selected = currentRoute == Screen.Share.name,
+            onClick = { navController.navigate(Screen.Share.name); closeDrawer() },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+        NavigationDrawerItem(
+            label = { Text(stringResource(id = Screen.Scan.title)) },
+            icon = { Icon(Icons.Filled.QrCodeScanner, null) },
+            selected = currentRoute == Screen.Scan.name,
+            onClick = { navController.navigate(Screen.Scan.name); closeDrawer() },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+        NavigationDrawerItem(
+            label = { Text(stringResource(id = Screen.Approve.title)) },
+            icon = { Icon(Icons.Filled.Approval, null) },
+            selected = currentRoute == Screen.Approve.name,
+            onClick = { navController.navigate(Screen.Approve.name); closeDrawer() },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
     }
@@ -76,8 +98,7 @@ fun PreviewAppDrawer() {
     AppTheme {
         AppDrawer(
             currentRoute = Screen.Tokens.name,
-            navigateToHome = {},
-            navigateToSettings = {},
+            navController = rememberNavController(),
             closeDrawer = { }
         )
     }

@@ -1,6 +1,7 @@
 package com.bokoup.customerapp.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -12,11 +13,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bokoup.customerapp.nav.NavGraph
 import com.bokoup.customerapp.nav.Screen
-import com.example.compose.AppTheme
+import com.bokoup.customerapp.ui.theme.AppTheme
+import com.bokoup.customerapp.util.SystemClipboard
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
+@ExperimentalMaterialApi
+@ExperimentalMaterial3Api
 fun BokoupApp(
     widthSizeClass: WindowWidthSizeClass
 ) {
@@ -30,12 +34,12 @@ fun BokoupApp(
 
         val isExpandedScreen = widthSizeClass == WindowWidthSizeClass.Expanded
         val sizeAwareDrawerState = rememberSizeAwareDrawerState(isExpandedScreen)
+
         ModalNavigationDrawer(
             drawerContent = {
                 AppDrawer(
                     currentRoute = currentRoute,
-                    navigateToHome = { TODO() },
-                    navigateToSettings = { TODO() },
+                    navController = navController,
                     closeDrawer = { coroutineScope.launch { sizeAwareDrawerState.close() } }
                 )
             },

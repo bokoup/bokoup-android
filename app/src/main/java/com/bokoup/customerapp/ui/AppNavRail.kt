@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bokoup.customerapp.R
 import com.bokoup.customerapp.nav.Screen
-import com.example.compose.AppTheme
+import com.bokoup.customerapp.ui.theme.AppTheme
 
 
 @Composable
@@ -49,10 +49,10 @@ fun AppNavRail(
             alwaysShowLabel = false
         )
         NavigationRailItem(
-            selected = currentRoute == Screen.Settings.name,
+            selected = currentRoute == Screen.Wallet.name,
             onClick = navigateToSettings,
-            icon = { Icon(Icons.Filled.Settings, stringResource(Screen.Settings.title)) },
-            label = { Text(stringResource(Screen.Settings.title)) },
+            icon = { Icon(Icons.Filled.Settings, stringResource(Screen.Wallet.title)) },
+            label = { Text(stringResource(Screen.Wallet.title)) },
             alwaysShowLabel = false
         )
         Spacer(Modifier.weight(1f))

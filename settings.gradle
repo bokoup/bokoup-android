@@ -1,16 +1,15 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
+rootProject.name = "bokoup"
+
+include ":ksol"
+include ":app"
+
+enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+// Rename each child "build.gradle" file to be the name of the module
+rootProject.children.each { subproject ->
+    subproject.buildFileName = "${subproject.name}.gradle"
 }
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-rootProject.name = "Customer App"
-include ':app'
+
+
+

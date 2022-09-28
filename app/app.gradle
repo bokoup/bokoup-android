@@ -1,0 +1,75 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id "dagger.hilt.android.plugin"
+}
+
+android {
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.bokoup.customerapp"
+        minSdk 21
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+        viewBinding true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion libs.versions.compose.compiler.get()
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    namespace 'com.bokoup.customerapp'
+}
+
+dependencies {
+    implementation projects.ksol
+    implementation libs.androidx.core
+    implementation libs.bundles.compose
+    implementation libs.bundles.material3
+    implementation libs.androidx.lifecycle
+    implementation libs.androidx.activity
+    implementation libs.mlkit
+    implementation libs.androidx.lifecycle.viewmodel
+    implementation libs.androidx.navigation
+    implementation libs.bundles.room
+    implementation libs.bundles.hilt
+    implementation libs.google.fonts
+    implementation libs.material.icons.extended
+    implementation libs.zing
+    implementation libs.bundles.camerax
+    implementation libs.bundles.retrofit
+    implementation libs.coil.compose
+    implementation libs.okhttp.logging
+    testImplementation libs.android.junit
+    androidTestImplementation libs.bundles.test
+    debugImplementation libs.bundles.debug
+    kapt libs.bundles.kapt
+}

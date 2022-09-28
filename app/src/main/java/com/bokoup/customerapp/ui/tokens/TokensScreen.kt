@@ -1,30 +1,44 @@
 package com.bokoup.customerapp.ui.tokens
 
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.bokoup.customerapp.ui.tokens.components.TokensContent
-import com.bokoup.customerapp.ui.tokens.components.TokensTopBar
-import com.bokoup.customerapp.ui.tokens.components.TokensViewModel
+import com.bokoup.customerapp.R
+import com.bokoup.customerapp.nav.Screen
+import com.bokoup.customerapp.ui.common.AppScreen
+import kotlinx.coroutines.channels.Channel
 
 @Composable
 @ExperimentalMaterial3Api
 fun TokensScreen(
     viewModel: TokensViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.getTokens()
     }
-    Scaffold(
-        topBar = {
-            TokensTopBar(openDrawer = openDrawer)
-        },
-        content = { padding ->
-            TokensContent(padding = padding, tokens = viewModel.tokens)
+
+    val actions: @Composable (RowScope.() -> Unit) = {
+        IconButton(onClick = { /* TODO: Open search */ }) {
+            Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = stringResource(R.string.app_name)
+            )
         }
+    }
+    AppScreen(
+        snackbarHostState = snackbarHostState,
+        openDrawer = openDrawer,
+        screen = Screen.Tokens,
+        topBarActions = actions,
+        content = { TokensContent(padding = it, tokens = viewModel.tokens) }
     )
+
 }

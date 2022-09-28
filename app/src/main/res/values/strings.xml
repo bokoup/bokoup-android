@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">bokoup</string>
     <string name="tokens">Tokens</string>
-    <string name="token_details">Token Details</string>
-    <string name="settings">Settings</string>
-    <string name="wallet_key">Wallet Key</string>
-    <string name="token_table">token</string>
+    <string name="token_detail">Token Details</string>
+    <string name="wallet">Wallet</string>
+    <string name="share">Share</string>
+    <string name="scan">Scan</string>
+    <string name="approve">Approve</string>
 </resources>

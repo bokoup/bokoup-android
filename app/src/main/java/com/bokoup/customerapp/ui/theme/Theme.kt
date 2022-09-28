@@ -1,10 +1,10 @@
-package com.example.compose
+package com.bokoup.customerapp.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import com.bokoup.customerapp.ui.theme.AppTypography
 
 
@@ -71,17 +71,24 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun AppTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    isDynamicColor: Boolean = false,
     content: @Composable() () -> Unit
 ) {
-    val colors = if (!useDarkTheme) {
-        LightColors
-    } else {
-        DarkColors
+    val dynamicColor = isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val colorScheme = when {
+        dynamicColor && isDarkTheme -> {
+            dynamicDarkColorScheme(LocalContext.current)
+        }
+        dynamicColor && !isDarkTheme -> {
+            dynamicLightColorScheme(LocalContext.current)
+        }
+        isDarkTheme -> DarkColors
+        else -> LightColors
     }
 
     MaterialTheme(
-        colorScheme = colors,
+        colorScheme = colorScheme,
         content = content,
         typography = AppTypography
     )
