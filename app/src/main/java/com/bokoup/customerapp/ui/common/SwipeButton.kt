@@ -107,10 +107,6 @@ fun SwipeButton(
     LaunchedEffect(
         key1 = swipeableState.currentValue,
     ) {
-        Log.d("jingus", swipeableState.currentValue.toString())
-        Log.d("jingus", swipeComplete.toString())
-        Log.d("jingus", isComplete.toString())
-        Log.d("jingus", isSuccess.toString())
         if (swipeableState.currentValue == 1 && !swipeComplete) {
             setSwipeComplete(true)
             onSwipe()

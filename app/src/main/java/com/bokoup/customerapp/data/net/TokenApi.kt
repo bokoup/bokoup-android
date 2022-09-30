@@ -13,7 +13,8 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-class TokenApi {
+class TokenApi() {
+
     private val interceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
@@ -22,6 +23,8 @@ class TokenApi {
         .client(OkHttpClient.Builder().apply {addInterceptor(interceptor = interceptor)}.build())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+
+    val baseUrl = retrofit.baseUrl().toUrl()
 
     private val tokenService = retrofit.create(TokenService::class.java)
 

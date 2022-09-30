@@ -45,7 +45,7 @@ fun BokoupApp(
             },
             drawerState = sizeAwareDrawerState,
             // Only enable opening the drawer via gestures if the screen is not expanded
-            gesturesEnabled = !isExpandedScreen
+            // gesturesEnabled = !isExpandedScreen
         ) {
             Row {
                 NavGraph(

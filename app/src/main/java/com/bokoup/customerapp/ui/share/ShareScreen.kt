@@ -16,28 +16,15 @@ import kotlinx.coroutines.channels.Channel
 @Composable
 @ExperimentalMaterial3Api
 fun ShareScreen(
-    viewModel: ShareViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit,
 ) {
-    LaunchedEffect(viewModel.qrCodeConsumer) {
-        viewModel.getQrCode()
-    }
-
-    val qrCode: Pair<String, Bitmap>? by viewModel.qrCodeConsumer.data.collectAsState()
-
     AppScreen(
         snackbarHostState = snackbarHostState,
         openDrawer = openDrawer,
         screen = Screen.Share,
         content = {
-            if (qrCode != null) {
-                ShareContent(
-                    padding = it,
-                    qrCode = qrCode!!.second,
-                    address = qrCode!!.first,
-                    copyToClipboard = { viewModel.copyToClipboard(qrCode!!.first) })
-            }
+            ShareContent(padding = it)
         }
     )
 

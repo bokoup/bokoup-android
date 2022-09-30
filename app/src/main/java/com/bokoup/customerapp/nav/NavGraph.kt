@@ -33,14 +33,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 @ExperimentalMaterialApi
 fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
     val channel = Channel<String>(Channel.CONFLATED)
-    val snackbarHostState by remember{ mutableStateOf(SnackbarHostState()) }
+    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
 
     LaunchedEffect(channel) {
         channel.consumeAsFlow().collect { message ->
             val result = snackbarHostState.showSnackbar(
-                message = message,
-                withDismissAction = true,
-                duration = SnackbarDuration.Indefinite
+                message = message, withDismissAction = true, duration = SnackbarDuration.Indefinite
             )
             when (result) {
                 SnackbarResult.ActionPerformed -> {
@@ -53,8 +51,7 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
     }
 
     NavHost(
-        navController = navController,
-        startDestination = Screen.Wallet.name
+        navController = navController, startDestination = Screen.Wallet.name
     ) {
         composable(
             route = Screen.Tokens.name
@@ -64,7 +61,9 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
         composable(
             route = Screen.Wallet.name
         ) {
-            WalletScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, channel = channel )
+            WalletScreen(
+                openDrawer = openDrawer, snackbarHostState = snackbarHostState, channel = channel
+            )
         }
         composable(
             route = Screen.Share.name
@@ -74,20 +73,31 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
         composable(
             route = Screen.Scan.name
         ) {
-            ScanScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, channel = channel, navigateTo = { navController.navigate(Screen.Tokens.name) } )
+            val route =
+            ScanScreen(openDrawer = openDrawer,
+                snackbarHostState = snackbarHostState,
+                navigateToApprove = { mintString, promoName -> navController.navigate("" +
+                        "${Screen.Approve.name}?mintString=${mintString}?promoName=${promoName}") })
         }
         composable(
-            route = Screen.Approve.name
+            route = "${Screen.Approve.name}?mintString={mintString}?promoName={promoName}",
+            arguments = listOf(
+                navArgument("mintString") { type = NavType.StringType; nullable = true },
+                navArgument("promoName") { type = NavType.StringType; nullable = true })
         ) {
-            ApproveScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, channel = channel )
+            ApproveScreen(
+                openDrawer = openDrawer,
+                snackbarHostState = snackbarHostState,
+                channel = channel,
+                mintString = it.arguments?.getString("mintString"),
+                promoName = it.arguments?.getString("promoName")
+            )
         }
         composable(
             route = "${Screen.TokenDetail}/{tokenId}",
-            arguments = listOf(
-                navArgument("tokenId") {
-                    type = NavType.StringType
-                }
-            )
+            arguments = listOf(navArgument("tokenId") {
+                type = NavType.StringType
+            })
         ) { backStackEntry ->
             val tokenId = backStackEntry.arguments?.getString("tokenId") ?: ""
             TODO()

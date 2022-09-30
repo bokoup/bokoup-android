@@ -23,7 +23,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+class AppModule() {
     @Provides
     fun provideChainDb(
         @ApplicationContext
@@ -75,9 +75,9 @@ class AppModule {
 
     @Provides
     fun provideAddressRepo(
-        adressDao: AddressDao
+        addressDao: AddressDao
     ): AddressRepo = AddressRepoImpl(
-        addressDao = adressDao
+        addressDao = addressDao
     )
 
     @Provides

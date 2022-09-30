@@ -26,6 +26,8 @@ fun ApproveScreen(
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit,
     channel: Channel<String>,
+    mintString: String?,
+    promoName: String?
 ) {
 
     val keyPair: KeyPair? by viewModel.keyPairConsumer.data.collectAsState()
@@ -41,12 +43,11 @@ fun ApproveScreen(
         }
     }
 
-    if (keyPair != null) {
-        LaunchedEffect(key1 = keyPair, Unit) {
-            viewModel.getAppId("GeWRS2Det9da6K2xQw4Fd62Kv3qVQx1E3wsjAqk8DGs1", "Promo1")
+    LaunchedEffect(key1 = keyPair) {
+        if (keyPair != null && mintString != null && promoName != null) {
+            viewModel.getAppId(mintString, promoName)
             viewModel.getTokenTransaction(
-                "GeWRS2Det9da6K2xQw4Fd62Kv3qVQx1E3wsjAqk8DGs1",
-                "Promo1",
+                mintString, promoName,
                 keyPair!!.publicKey.toString()
             )
         }

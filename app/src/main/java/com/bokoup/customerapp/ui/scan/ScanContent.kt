@@ -1,9 +1,8 @@
 package com.bokoup.customerapp.ui.scan
 
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -15,10 +14,6 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,11 +24,14 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.bokoup.customerapp.dom.model.ScanResult
 import com.bokoup.customerapp.ui.common.SwipeButton
 import com.google.mlkit.vision.barcode.common.Barcode
 import kotlinx.coroutines.channels.Channel
@@ -44,11 +42,10 @@ import kotlinx.coroutines.delay
 @ExperimentalMaterial3Api
 @Composable
 fun ScanContent(
+    viewModel: ScanViewModel = hiltViewModel(),
     padding: PaddingValues,
-    scanner: BarcodeScanner,
-    channel: Channel<String>,
     boxColor: Color = Color.Green,
-    navigateTo: () -> Unit
+    navigateToApprove: (String, String) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -58,10 +55,6 @@ fun ScanContent(
     cameraController.bindToLifecycle(
         lifecycleOwner
     )
-
-    var barcode: Barcode? by remember {
-        mutableStateOf(null)
-    }
 
     var hasCamPermission by remember {
         mutableStateOf(
@@ -77,15 +70,30 @@ fun ScanContent(
             hasCamPermission = granted
         }
     )
+
+    val scanResult: ScanResult? by viewModel.scanResult.collectAsState()
+
     LaunchedEffect(key1 = true) {
         launcher.launch(Manifest.permission.CAMERA)
+    }
+
+
+
+    LaunchedEffect(scanResult) {
+        if (scanResult != null) {
+            if (scanResult is ScanResult.BokoupUrl) {
+                val scanResult = scanResult as ScanResult.BokoupUrl
+                navigateToApprove(scanResult.mintString, scanResult.promoName)
+            }
+        }
+
     }
     if (hasCamPermission) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.BottomCenter
         ) {
             AndroidView(
                 factory = { context ->
@@ -107,15 +115,15 @@ fun ScanContent(
                             context
                         ),
                             MlKitAnalyzer(
-                                listOf(scanner),
+                                listOf(viewModel.scanner),
                                 COORDINATE_SYSTEM_VIEW_REFERENCED,
                                 ContextCompat.getMainExecutor(context)
                             ) { result ->
-                                val codes = result.getValue(scanner)
+                                val codes = result.getValue(viewModel.scanner)
                                 if (codes != null && codes.size > 0) {
-                                    barcode = codes[0]
+                                    viewModel.getScanResult(codes[0])
                                 } else {
-                                    barcode = null
+                                    viewModel.getScanResult(null)
                                 }
                             })
 
@@ -126,11 +134,11 @@ fun ScanContent(
                 },
                 modifier = Modifier.fillMaxSize(),
             )
-            if (barcode != null) {
+            if (scanResult != null) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawPath(
                         path = Path().apply {
-                            val cornerPoints = barcode!!.cornerPoints!!
+                            val cornerPoints = scanResult!!.barcode.cornerPoints!!
                             val startPoint =
                                 Pair(cornerPoints[0].x.toFloat(), cornerPoints[0].y.toFloat())
                             cornerPoints.forEachIndexed { i, point ->
@@ -150,9 +158,22 @@ fun ScanContent(
 
                 }
             }
-            Row(modifier = Modifier.fillMaxWidth().height(64.dp), horizontalArrangement = Arrangement.Center) {
-                Text(text = barcode?.rawValue ?: "")
+            if (scanResult is ScanResult.Other) {
+                val scanResult = scanResult as ScanResult.Other
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth()
+                        .height(64.dp), horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(onClick = { viewModel.copyToClipboard(scanResult.value) }) {
+                        Text(
+                            text = "${scanResult.value.slice(0..16)}...",
+                        )
+                    }
+                }
             }
+
         }
 
     }

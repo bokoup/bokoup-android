@@ -14,13 +14,13 @@ import kotlinx.coroutines.*
 @HiltViewModel
 class WalletViewModel @Inject constructor(private val repo: AddressRepo) : ViewModel() {
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
-    var addressesConsumer = ResourceFlowConsumer<List<Address>>(viewModelScope)
+    val addressesConsumer = ResourceFlowConsumer<List<Address>>(viewModelScope)
 
     init {
         getAddresses()
     }
 
-    fun createAddress(active: Boolean? = null) = viewModelScope.launch {
+    fun createAddress(active: Boolean? = null) = viewModelScope.launch(dispatcher) {
         val words = KeyFactory.createMnemonic(MnemonicPhraseLength.TWELVE)
         val newKeyPair = KeyFactory.createKeyPairFromMnemonic(words)
 
@@ -30,9 +30,7 @@ class WalletViewModel @Inject constructor(private val repo: AddressRepo) : ViewM
             active = active
         )
 
-        withContext(dispatcher) {
-            repo.insertAddress(address)
-        }
+        repo.insertAddress(address)
         getAddresses()
     }
 

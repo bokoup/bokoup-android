@@ -14,17 +14,15 @@ import kotlinx.coroutines.channels.Channel
 @ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 fun ScanScreen(
-    viewModel: ScanViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit,
-    channel: Channel<String>,
-    navigateTo: () -> Unit
+    navigateToApprove: (String, String) -> Unit
 ) {
     AppScreen(
         snackbarHostState = snackbarHostState,
         openDrawer = openDrawer,
         screen = Screen.Scan,
-        content = { ScanContent(padding = it, scanner = viewModel.scanner, navigateTo = navigateTo, channel = channel) }
+        content = { ScanContent(padding = it, navigateToApprove = navigateToApprove) }
     )
 
 }
