@@ -7,7 +7,7 @@ sealed class Cluster(
 
     constructor(url: String) : this(
         rpcUrl = "https://$url",
-        webSocketUrl = "ws://$url"
+        webSocketUrl = "wss://$url"
     )
 
     object DEVNET : Cluster(url = "api.devnet.solana.com")

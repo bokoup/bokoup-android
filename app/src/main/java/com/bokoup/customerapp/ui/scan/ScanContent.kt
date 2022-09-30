@@ -47,6 +47,7 @@ fun ScanContent(
     padding: PaddingValues,
     scanner: BarcodeScanner,
     channel: Channel<String>,
+    boxColor: Color = Color.Green,
     navigateTo: () -> Unit
 ) {
     val context = LocalContext.current
@@ -58,8 +59,8 @@ fun ScanContent(
         lifecycleOwner
     )
 
-    var barcodes by remember {
-        mutableStateOf(emptyList<Barcode>())
+    var barcode: Barcode? by remember {
+        mutableStateOf(null)
     }
 
     var hasCamPermission by remember {
@@ -80,13 +81,6 @@ fun ScanContent(
         launcher.launch(Manifest.permission.CAMERA)
     }
     if (hasCamPermission) {
-        if (barcodes.isNotEmpty() && false) {
-            LaunchedEffect(key1 = Unit){
-                channel.trySend(barcodes[0].displayValue!!)
-                delay(2000)
-                navigateTo()
-            }
-        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -119,7 +113,9 @@ fun ScanContent(
                             ) { result ->
                                 val codes = result.getValue(scanner)
                                 if (codes != null && codes.size > 0) {
-                                    barcodes = codes
+                                    barcode = codes[0]
+                                } else {
+                                    barcode = null
                                 }
                             })
 
@@ -130,11 +126,11 @@ fun ScanContent(
                 },
                 modifier = Modifier.fillMaxSize(),
             )
-            if (barcodes.isNotEmpty()) {
+            if (barcode != null) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawPath(
                         path = Path().apply {
-                            val cornerPoints = barcodes[0].cornerPoints!!
+                            val cornerPoints = barcode!!.cornerPoints!!
                             val startPoint =
                                 Pair(cornerPoints[0].x.toFloat(), cornerPoints[0].y.toFloat())
                             cornerPoints.forEachIndexed { i, point ->
@@ -146,17 +142,16 @@ fun ScanContent(
                             }
                             lineTo(startPoint.first, startPoint.second)
                         },
-                        color = Color.Green,
+                        color = boxColor,
                         style = Fill,
-                        alpha = 0.4f
+                        alpha = 0.5f
 
                     )
 
                 }
-                Row(modifier = Modifier.fillMaxWidth().height(84.dp)) {
-                    SwipeButton(text = "Approve", onSwipe = navigateTo )
-                }
-
+            }
+            Row(modifier = Modifier.fillMaxWidth().height(64.dp), horizontalArrangement = Arrangement.Center) {
+                Text(text = barcode?.rawValue ?: "")
             }
         }
 

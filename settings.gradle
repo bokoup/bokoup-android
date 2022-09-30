@@ -3,7 +3,6 @@ rootProject.name = "bokoup"
 include ":ksol"
 include ":app"
 
-enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 // Rename each child "build.gradle" file to be the name of the module

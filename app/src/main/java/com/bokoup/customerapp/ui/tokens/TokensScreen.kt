@@ -12,7 +12,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bokoup.customerapp.R
 import com.bokoup.customerapp.nav.Screen
 import com.bokoup.customerapp.ui.common.AppScreen
-import kotlinx.coroutines.channels.Channel
 
 @Composable
 @ExperimentalMaterial3Api

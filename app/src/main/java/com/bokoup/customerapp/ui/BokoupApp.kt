@@ -48,13 +48,6 @@ fun BokoupApp(
             gesturesEnabled = !isExpandedScreen
         ) {
             Row {
-                if (isExpandedScreen) {
-                    AppNavRail(
-                        currentRoute = currentRoute,
-                        navigateToHome = { TODO() },
-                        navigateToSettings = { TODO() },
-                    )
-                }
                 NavGraph(
                     navController = navController,
                     openDrawer = { coroutineScope.launch { sizeAwareDrawerState.open() } }

@@ -1,8 +1,10 @@
 package com.bokoup.customerapp.nav
 
+import android.util.Log
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.*
@@ -23,31 +25,28 @@ import com.bokoup.customerapp.ui.wallet.WalletScreen
 import com.bokoup.customerapp.util.SystemClipboard
 import com.dgsd.ksol.model.KeyPair
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
-    val channel = Channel<String>(Channel.BUFFERED)
-    var activeKeyPair: KeyPair? by rememberSaveable { mutableStateOf(null) }
-    fun setKeyPair(newKeyPair: KeyPair) {
-        activeKeyPair = newKeyPair
-    }
-    val snackbarHostState = remember { SnackbarHostState() }
+    val channel = Channel<String>(Channel.CONFLATED)
+    val snackbarHostState by remember{ mutableStateOf(SnackbarHostState()) }
 
     LaunchedEffect(channel) {
-        channel.receiveAsFlow().collect { message ->
+        channel.consumeAsFlow().collect { message ->
             val result = snackbarHostState.showSnackbar(
                 message = message,
-                actionLabel = "Dismiss"
+                withDismissAction = true,
+                duration = SnackbarDuration.Indefinite
             )
             when (result) {
                 SnackbarResult.ActionPerformed -> {
                     /* action has been performed */
                 }
                 SnackbarResult.Dismissed -> {
-                    /* dismissed, no action needed */
                 }
             }
         }
@@ -55,7 +54,7 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Tokens.name
+        startDestination = Screen.Wallet.name
     ) {
         composable(
             route = Screen.Tokens.name
@@ -65,12 +64,12 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
         composable(
             route = Screen.Wallet.name
         ) {
-            WalletScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState,  channel = channel, setKeyPair = { setKeyPair(it) }, activeAddress = activeKeyPair?.publicKey.toString())
+            WalletScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, channel = channel )
         }
         composable(
             route = Screen.Share.name
         ) {
-            ShareScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, channel = channel, address = activeKeyPair?.publicKey.toString())
+            ShareScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState)
         }
         composable(
             route = Screen.Scan.name
@@ -80,7 +79,7 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
         composable(
             route = Screen.Approve.name
         ) {
-            ApproveScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, keyPair = activeKeyPair!! )
+            ApproveScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState, channel = channel )
         }
         composable(
             route = "${Screen.TokenDetail}/{tokenId}",

@@ -23,23 +23,32 @@ import com.bokoup.customerapp.dom.model.Address
 
 
 @Composable
-fun AddressItem(address: Address, setKeyPairFromAddress: (String) -> Unit, activeAddress: String, modifier: Modifier = Modifier) {
-    val modifier = if (address.id == activeAddress) {
+fun AddressItem(
+    address: Address,
+    updateActive: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val modifier = if (address.active == true) {
         modifier
             .padding(12.dp)
-            .background(color = MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(50))
+            .background(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                RoundedCornerShape(50)
+            )
             .border(ButtonDefaults.outlinedButtonBorder, RoundedCornerShape(50))
             .clip(RoundedCornerShape(50))
-            .fillMaxSize().clickable(
-                onClick = { setKeyPairFromAddress(address.id) },
+            .fillMaxSize()
+            .clickable(
+                onClick = { updateActive(address.id) },
             )
     } else {
         modifier
             .padding(12.dp)
             .border(ButtonDefaults.outlinedButtonBorder, RoundedCornerShape(50))
             .clip(RoundedCornerShape(50))
-            .fillMaxSize().clickable(
-                onClick = { setKeyPairFromAddress(address.id) },
+            .fillMaxSize()
+            .clickable(
+                onClick = { updateActive(address.id) },
             )
     }
 
@@ -48,9 +57,13 @@ fun AddressItem(address: Address, setKeyPairFromAddress: (String) -> Unit, activ
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(text = "${address.id.slice(0..27)}...", modifier = Modifier.padding(20.dp))
-        if (address.id == activeAddress) {
-            Icon(Icons.Filled.Check, contentDescription = "Active", modifier = Modifier.padding(horizontal = 16.dp))
+        Text(text = "${address.id.slice(0..16)}...", modifier = Modifier.padding(20.dp))
+        if (address.active == true) {
+            Icon(
+                Icons.Filled.Check,
+                contentDescription = "Active",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
     }
 }

@@ -3,9 +3,7 @@ package com.bokoup.customerapp.ui.share
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,13 +26,15 @@ fun ShareContent(
                 .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { copyToClipboard(address.toString())} ) {
+            Image(qrCode.asImageBitmap(), contentDescription = address)
+            Spacer(modifier = Modifier.padding(16.dp))
+            Button(onClick = { copyToClipboard(address.toString())}) {
                 Text(
                     text = "${address.slice(0..16)}...",
                 )
             }
-            Spacer(modifier = Modifier.padding(16.dp))
-            Image(qrCode.asImageBitmap(), contentDescription = address)
+
+
         }
 
     }
