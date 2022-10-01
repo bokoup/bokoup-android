@@ -2,6 +2,7 @@ package com.bokoup.customerapp.ui.wallet
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bokoup.customerapp.dom.model.Address
 import com.bokoup.customerapp.dom.repo.AddressRepo
 import com.bokoup.customerapp.util.ResourceFlowConsumer
@@ -10,28 +11,26 @@ import javax.inject.Inject
 import com.dgsd.ksol.keygen.KeyFactory
 import com.dgsd.ksol.keygen.MnemonicPhraseLength
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.merge
 
 @HiltViewModel
 class WalletViewModel @Inject constructor(private val repo: AddressRepo) : ViewModel() {
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    val insertAddressConsumer = ResourceFlowConsumer<Unit>(viewModelScope)
     val addressesConsumer = ResourceFlowConsumer<List<Address>>(viewModelScope)
+    val errorConsumer = merge(
+        addressesConsumer.error,
+        insertAddressConsumer.error,
+    )
 
     init {
         getAddresses()
     }
 
-    fun createAddress(active: Boolean? = null) = viewModelScope.launch(dispatcher) {
-        val words = KeyFactory.createMnemonic(MnemonicPhraseLength.TWELVE)
-        val newKeyPair = KeyFactory.createKeyPairFromMnemonic(words)
-
-        val address = Address(
-            id = newKeyPair.publicKey.toString(),
-            phrase = words.joinToString(),
-            active = active
+    fun insertAddress() = viewModelScope.launch(dispatcher) {
+        insertAddressConsumer.collectFlow(
+            repo.insertAddress()
         )
-
-        repo.insertAddress(address)
-        getAddresses()
     }
 
     fun getAddresses() = addressesConsumer.collectFlow(

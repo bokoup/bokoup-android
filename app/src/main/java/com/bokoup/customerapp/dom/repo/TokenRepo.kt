@@ -18,8 +18,5 @@ interface TokenRepo {
         promoName: String,
         address: String
     ): Flow<Resource<TokenApiResponse>>
-    fun signAndSend(
-        transaction: String,
-        keyPair: KeyPair
-    ): Flow<Resource<TransactionSignature>>
+
 }

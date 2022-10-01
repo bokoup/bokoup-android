@@ -4,14 +4,17 @@ import android.content.Context
 import androidx.room.Room
 import com.bokoup.customerapp.data.net.*
 import com.bokoup.customerapp.data.repo.AddressRepoImpl
+import com.bokoup.customerapp.data.repo.SolanaRepoImpl
 import com.bokoup.customerapp.data.repo.TokenRepoImpl
 import com.bokoup.customerapp.dom.repo.AddressRepo
+import com.bokoup.customerapp.dom.repo.SolanaRepo
 import com.bokoup.customerapp.dom.repo.TokenRepo
 import com.bokoup.customerapp.util.QRCodeGenerator
 import com.bokoup.customerapp.util.QRCodeScanner
 import com.bokoup.customerapp.util.SystemClipboard
 import com.dgsd.ksol.LocalTransactions
 import com.dgsd.ksol.SolanaApi
+import com.dgsd.ksol.SolanaSubscription
 import com.dgsd.ksol.model.Cluster
 import dagger.Module
 import dagger.Provides
@@ -25,7 +28,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 @InstallIn(SingletonComponent::class)
 class AppModule() {
     @Provides
-    fun provideChainDb(
+    fun chainDb(
         @ApplicationContext
         context: Context
     ) = Room.databaseBuilder(
@@ -35,17 +38,13 @@ class AppModule() {
     ).build()
 
     @Provides
-    fun provideTokenDao(
+    fun tokenDao(
         chainDb: ChainDb,
     ) = chainDb.tokenDao()
 
     @Provides
-    fun provideTokenApi(
+    fun tokenApi(
     ) = TokenApi()
-
-    @Provides
-    fun localTransactions(
-    ) = LocalTransactions
 
     @Provides
     fun solanaApi(
@@ -56,40 +55,57 @@ class AppModule() {
     }.build())
 
     @Provides
-    fun provideTokenRepo(
+    fun solanaSubscription(
+    ) = solanaApi().createSubscription()
+
+    @Provides
+    fun localTransactions(
+    ) = LocalTransactions
+
+    @Provides
+    fun tokenRepo(
         tokenDao: TokenDao,
         tokenApi: TokenApi,
-        localTransactions: LocalTransactions,
-        solanaApi: SolanaApi,
     ): TokenRepo = TokenRepoImpl(
         tokenDao = tokenDao,
         tokenApi = tokenApi,
-        localTransactions = localTransactions,
-        solanaApi = solanaApi
     )
 
     @Provides
-    fun provideAddressDao(
+    fun solanaRepo(
+        solanaApi: SolanaApi,
+        solanaSubscription: SolanaSubscription,
+        localTransactions: LocalTransactions,
+    ): SolanaRepo = SolanaRepoImpl(
+        solanaApi = solanaApi,
+        solanaSubscription = solanaSubscription,
+        localTransactions = localTransactions
+    )
+
+    @Provides
+    fun addressDao(
         chainDb: ChainDb,
     ) = chainDb.addressDao()
 
     @Provides
-    fun provideAddressRepo(
-        addressDao: AddressDao
+    fun addressRepo(
+        addressDao: AddressDao,
+        solanaRepo: SolanaRepo
     ): AddressRepo = AddressRepoImpl(
-        addressDao = addressDao
+        addressDao = addressDao,
+        solanaRepo = solanaRepo
     )
 
     @Provides
-    fun provideQRCodeGenerator(
+    fun qRCodeGenerator(
     ) = QRCodeGenerator
 
     @Provides
-    fun provideQRCodeScanner(
+    fun qRCodeScanner(
     ) = QRCodeScanner
 
     @Provides
-    fun provideSystemClipboard(
+    fun systemClipboard(
         @ApplicationContext
         context: Context
     ) = SystemClipboard(context)

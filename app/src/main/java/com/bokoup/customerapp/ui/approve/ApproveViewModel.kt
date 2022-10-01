@@ -6,6 +6,7 @@ import com.bokoup.customerapp.data.net.TokenApiId
 import com.bokoup.customerapp.data.net.TokenApiResponse
 import com.bokoup.customerapp.dom.model.toKeyPair
 import com.bokoup.customerapp.dom.repo.AddressRepo
+import com.bokoup.customerapp.dom.repo.SolanaRepo
 import com.bokoup.customerapp.dom.repo.TokenRepo
 import com.bokoup.customerapp.util.ResourceFlowConsumer
 import com.bokoup.customerapp.util.mapData
@@ -28,6 +29,7 @@ import kotlin.math.sign
 class ApproveViewModel @Inject constructor(
     private val tokenRepo: TokenRepo,
     private val addressRepo: AddressRepo,
+    private val solanaRepo: SolanaRepo,
 ) : ViewModel() {
     val keyPairConsumer = ResourceFlowConsumer<KeyPair>(viewModelScope)
     val appIdConsumer = ResourceFlowConsumer<TokenApiId>(viewModelScope)
@@ -43,7 +45,7 @@ class ApproveViewModel @Inject constructor(
     private val _swipeComplete = MutableStateFlow<Boolean>(false)
     val swipeComplete =_swipeComplete.asStateFlow()
 
-    suspend fun getKeyPair() {
+    fun getKeyPair() {
         viewModelScope.launch(Dispatchers.IO) {
             keyPairConsumer.collectFlow(
                 addressRepo.getActiveAddress().mapData { address -> address.toKeyPair() })
@@ -72,7 +74,7 @@ class ApproveViewModel @Inject constructor(
 
     fun signAndSend(transaction: String, keyPair: KeyPair) {
         viewModelScope.launch(Dispatchers.IO) {
-            signatureConsumer.collectFlow(tokenRepo.signAndSend(transaction, keyPair))
+            signatureConsumer.collectFlow(solanaRepo.signAndSend(transaction, keyPair))
         }
     }
 

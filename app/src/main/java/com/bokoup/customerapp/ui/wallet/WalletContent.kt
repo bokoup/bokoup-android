@@ -35,7 +35,7 @@ fun WalletContent(
             )
         }
     }
-    if (addresses != null) {
+    if (addresses != null && !isLoading) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

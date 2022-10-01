@@ -56,28 +56,32 @@ fun ScanContent(
         lifecycleOwner
     )
 
-    var hasCamPermission by remember {
+    val permissions =
+        listOf(Manifest.permission.CAMERA)
+
+    var hasPermissions by remember {
         mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
+            permissions.associateWith {
+                (ContextCompat.checkSelfPermission(
+                    context,
+                    it
+                ) == PackageManager.PERMISSION_GRANTED)
+            }
         )
     }
+
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { granted ->
-            hasCamPermission = granted
+            hasPermissions = granted
         }
     )
 
     val scanResult: ScanResult? by viewModel.scanResult.collectAsState()
 
     LaunchedEffect(key1 = true) {
-        launcher.launch(Manifest.permission.CAMERA)
+        launcher.launch(permissions.toTypedArray())
     }
-
-
 
     LaunchedEffect(scanResult) {
         if (scanResult != null) {
@@ -88,7 +92,7 @@ fun ScanContent(
         }
 
     }
-    if (hasCamPermission) {
+    if (hasPermissions[Manifest.permission.CAMERA]!!) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

@@ -21,10 +21,7 @@ import kotlin.math.sign
 class TokenRepoImpl(
     private val tokenDao: TokenDao,
     private val tokenApi: TokenApi,
-    private val localTransactions: LocalTransactions,
-    private val solanaApi: SolanaApi,
 ) : TokenRepo {
-    val subscriptionService = solanaApi.createSubscription()
     override fun getTokensFromRoom() = tokenDao.getTokens()
     override fun getApiId(
         mintString: String,
@@ -38,32 +35,4 @@ class TokenRepoImpl(
         address: String
     ): Flow<Resource<TokenApiResponse>> =
         resourceFlowOf { tokenApi.getTokenTransaction(mintString, promoName, address) }
-
-    override fun signAndSend(
-        transaction: String,
-        keyPair: KeyPair
-    ): Flow<Resource<TransactionSignature>> =
-        flow<Resource<TransactionSignature>> {
-            emit(Resource.Loading())
-            runCatching {
-                val localTransaction = localTransactions.deserializeTransaction(transaction)
-                solanaApi.sendTransaction(localTransactions.sign(localTransaction, keyPair))
-            }.onSuccess {signature ->
-                subscriptionService.connect()
-                subscriptionService.signatureSubscribe(signature, Commitment.CONFIRMED).collect {
-                    try {
-                        if(it is TransactionSignatureStatus.Confirmed) {
-                            subscriptionService.disconnect()
-                            emit(Resource.Success(signature))
-                        }
-                    } catch(error: Throwable) {
-                        subscriptionService.disconnect()
-                        emit(Resource.Error(error))
-
-                    }
-                }
-            }.onFailure {
-                emit(Resource.Error(it))
-            }
-        }.flowOn(Dispatchers.IO)
 }

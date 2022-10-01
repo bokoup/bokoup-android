@@ -23,16 +23,18 @@ fun WalletScreen(
     channel: Channel<String>
 ) {
     val addresses: List<Address>? by viewModel.addressesConsumer.data.collectAsState()
-    val isLoading: Boolean by viewModel.addressesConsumer.isLoading.collectAsState()
-    val error: Throwable? by viewModel.addressesConsumer.error.collectAsState()
+    val isLoadingAddreses: Boolean by viewModel.addressesConsumer.isLoading.collectAsState()
+    val isLoadingInsert: Boolean by viewModel.insertAddressConsumer.isLoading.collectAsState()
+    val error: Throwable? by viewModel.errorConsumer.collectAsState(null)
 
     LaunchedEffect(viewModel.addressesConsumer) {
         if (error != null) {
             channel.trySend(error!!.message.toString())
         }
-        if (addresses != null && addresses!!.isEmpty()) {
-            viewModel.createAddress(true)
-        }
+    }
+
+    LaunchedEffect(isLoadingInsert) {
+        viewModel.getAddresses()
     }
 
     AppScreen(
@@ -44,12 +46,12 @@ fun WalletScreen(
                 padding = it,
                 addresses = addresses,
                 updateActive = { id -> viewModel.updateActive(id) },
-                isLoading = isLoading,
+                isLoading = isLoadingAddreses || isLoadingInsert,
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.createAddress() }) {
-                Icon(Icons.Filled.Add, contentDescription = "Create Address")
+            FloatingActionButton(onClick = { viewModel.insertAddress() }) {
+                Icon(Icons.Filled.Add, contentDescription = "Add Address")
             }
         },
     )
