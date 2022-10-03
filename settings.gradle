@@ -1,7 +1,9 @@
 rootProject.name = "bokoup"
 
+include ":customerapp"
+include ":merchantapp"
 include ":ksol"
-include ":app"
+include ":lib"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -9,6 +11,4 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.children.each { subproject ->
     subproject.buildFileName = "${subproject.name}.gradle"
 }
-
-
 

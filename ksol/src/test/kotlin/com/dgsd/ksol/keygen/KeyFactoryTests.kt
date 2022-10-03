@@ -1,6 +1,5 @@
 package com.dgsd.ksol.keygen
 
-import com.dgsd.ksol.model.KeyPair
 import com.dgsd.ksol.model.PrivateKey
 import com.dgsd.ksol.model.PublicKey
 import kotlinx.coroutines.runBlocking
