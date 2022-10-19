@@ -17,7 +17,6 @@ import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.lib.SystemClipboard
 import com.dgsd.ksol.LocalTransactions
 import com.dgsd.ksol.SolanaApi
-import com.dgsd.ksol.SolanaSubscription
 import com.dgsd.ksol.model.Cluster
 import dagger.Module
 import dagger.Provides
@@ -58,10 +57,6 @@ class AppModule() {
     }.build())
 
     @Provides
-    fun solanaSubscription(
-    ) = solanaApi().createSubscription()
-
-    @Provides
     fun localTransactions(
     ) = LocalTransactions
 
@@ -77,11 +72,9 @@ class AppModule() {
     @Provides
     fun solanaRepo(
         solanaApi: SolanaApi,
-        solanaSubscription: SolanaSubscription,
         localTransactions: LocalTransactions,
     ): SolanaRepo = SolanaRepoImpl(
         solanaApi = solanaApi,
-        solanaSubscription = solanaSubscription,
         localTransactions = localTransactions
     )
 

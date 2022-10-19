@@ -2,7 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-    id "dagger.hilt.android.plugin"
+    id 'dagger.hilt.android.plugin'
+    id 'com.apollographql.apollo3'
 }
 
 android {
@@ -62,6 +63,7 @@ android {
 
 dependencies {
     implementation projects.lib
+    implementation projects.ksol
     implementation libs.androidx.core
     implementation libs.bundles.compose
     implementation libs.bundles.material3
@@ -73,8 +75,18 @@ dependencies {
     implementation libs.bundles.hilt
     implementation libs.clover
     implementation libs.zxing
+    implementation libs.okhttp.logging
+    implementation libs.apollo.runtime
+    implementation libs.moshi.moshi
+    implementation libs.bundles.retrofit
+    implementation libs.material.icons.extended
     testImplementation libs.android.junit
     androidTestImplementation libs.bundles.test
     debugImplementation libs.bundles.debug
     kapt libs.bundles.kapt
+    kapt libs.moshi.codegen
+}
+
+apollo {
+    packageName.set("com.bokoup.merchantapp")
 }

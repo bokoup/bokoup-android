@@ -15,6 +15,8 @@ import com.bokoup.lib.Loading
 import com.bokoup.merchantapp.BuildConfig
 import kotlinx.coroutines.channels.Channel
 
+//https://developer.android.com/codelabs/jetpack-compose-basics#8
+
 @Composable
 @ExperimentalMaterial3Api
 fun TenderContent(

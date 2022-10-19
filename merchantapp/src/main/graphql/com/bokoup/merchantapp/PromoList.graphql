@@ -1,0 +1,21 @@
+query PromoListQuery {
+  promo {
+    id
+    owner
+    maxMint
+    maxBurn
+    mintCount
+    burnCount
+    createdAt
+    metadataObject {
+      id
+      name
+      symbol
+      uri
+    }
+    mintObject {
+      id
+      supply
+    }
+  }
+}

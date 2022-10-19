@@ -9,6 +9,7 @@ buildscript {
         classpath libs.kotlin.dokka
         classpath libs.android.gradle
         classpath libs.dagger.hilt.gradle
+        classpath libs.apollo.kotlin.gradle
     }
 }
 

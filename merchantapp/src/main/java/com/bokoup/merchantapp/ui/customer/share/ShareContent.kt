@@ -2,14 +2,12 @@ package com.bokoup.merchantapp.ui.customer.share
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,11 +28,31 @@ fun ShareContent(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
 ) {
+    val activity = (LocalContext.current as? Activity)
+    val qrCode: Pair<String, Bitmap>? by viewModel.qrCodeConsumer.data.collectAsState()
+    val notification: Notification? by viewModel.notification.collectAsState()
+
+
+    LaunchedEffect(Unit) {
+        viewModel.registerNotificationReceiver()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.unregisterNotificationReceiver()
+        }
+    }
+
     LaunchedEffect(viewModel.qrCodeConsumer) {
         viewModel.getQrCode()
     }
-    val activity = (LocalContext.current as? Activity)
-    val qrCode: Pair<String, Bitmap>? by viewModel.qrCodeConsumer.data.collectAsState()
+
+    LaunchedEffect(notification) {
+        if (notification != null && activity != null) {
+            viewModel.approve(activity)
+        }
+    }
+
 
     if (qrCode != null) {
         Column(
@@ -61,15 +79,18 @@ fun ShareContent(
             )
             if (activity != null) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Button(onClick = { viewModel.approve(activity) }) {
-                        Text("Approve", style = MaterialTheme.typography.headlineMedium)
-                    }
-                    Spacer(Modifier.width(16.dp))
                     Button(onClick = { viewModel.cancel(activity) }, colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.surface
                     )) {
                         Text("Cancel", style = MaterialTheme.typography.headlineMedium)
+                    }
+                    Spacer(Modifier.width(16.dp))
+                    Button(onClick = { viewModel.approve(activity) }) {
+                        Text("Approve", style = MaterialTheme.typography.headlineMedium)
+                    }
+                    if (notification != null) {
+                        Toast.makeText(LocalContext.current, notification!!.payload, Toast.LENGTH_LONG).show()
                     }
                 }
             }

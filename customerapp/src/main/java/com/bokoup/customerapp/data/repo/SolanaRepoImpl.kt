@@ -15,10 +15,10 @@ import kotlinx.coroutines.withContext
 
 class SolanaRepoImpl(
     private val solanaApi: SolanaApi,
-    private val solanaSubscription: SolanaSubscription,
     private val localTransactions: LocalTransactions,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : SolanaRepo {
+    override val solanaSubscription: SolanaSubscription = solanaApi.createSubscription()
     override fun signAndSend(
         transaction: String,
         keyPair: KeyPair

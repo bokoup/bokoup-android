@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.bokoup.merchantapp">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".MerchantApp"
@@ -43,14 +44,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-                <receiver
-                    android:name=".ui.MyBroadcastReceiver"
-                    android:exported="true">
-                    <intent-filter>
-                        <action android:name="com.clover.intent.action.PAYMENT_PROCESSED"/>
-                        <category android:name="android.intent.category.DEFAULT"/>
-                    </intent-filter>
-                </receiver>
+
+<!--        <receiver-->
+<!--            android:name=".ui.MyBroadcastReceiver"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.clover.sdk.app.intent.action.APP_NOTIFICATION" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
     </application>
 
 </manifest>

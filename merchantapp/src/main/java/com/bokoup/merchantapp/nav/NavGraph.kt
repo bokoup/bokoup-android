@@ -11,13 +11,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bokoup.merchantapp.ui.customer.share.ShareScreen
+import com.bokoup.merchantapp.ui.promo.PromoScreen
 import com.bokoup.merchantapp.ui.tender.TenderScreen
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 
 @Composable
 @ExperimentalMaterial3Api
-fun NavGraph(navController: NavHostController, startDestination: String) {
+fun NavGraph(navController: NavHostController, startDestination: String, openDrawer: () -> Unit) {
     val channel = Channel<String>(Channel.CONFLATED)
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
 
@@ -51,7 +52,12 @@ fun NavGraph(navController: NavHostController, startDestination: String) {
         composable(
             route = Screen.Tender.route,
         ) {
-            TenderScreen(snackbarHostState = snackbarHostState, channel = channel)
+            TenderScreen(snackbarHostState = snackbarHostState, channel = channel, openDrawer = openDrawer)
+        }
+        composable(
+            route = Screen.Promo.route,
+        ) {
+            PromoScreen(snackbarHostState = snackbarHostState, channel = channel, openDrawer = openDrawer)
         }
     }
 }
@@ -60,3 +66,4 @@ fun NavGraph(navController: NavHostController, startDestination: String) {
 // https://developer.android.com/jetpack/compose/navigation#deeplinks
 // https://developer.android.com/guide/components/broadcasts#receiving-broadcasts
 // https://clover.github.io/clover-android-sdk/constant-values.html#com.clover.sdk.v1.Intents.ACTION_ACTIVE_REGISTER_ORDER
+// https://docs.clover.com/docs/app-notifications
