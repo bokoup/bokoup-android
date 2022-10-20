@@ -7,6 +7,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import com.bokoup.lib.resourceFlowOf
 import com.bokoup.merchantapp.model.CreatePromoArgs
+import com.bokoup.merchantapp.model.PromoWithMetadataJson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,7 +19,18 @@ class DataRepoImpl(
     private val dataService: DataService,
     private val transactionService: TransactionService
 ): DataRepo {
-    override fun fetchPromos() = resourceFlowOf { dataService.fetchPromos() }
+    override fun fetchPromos() = resourceFlowOf { dataService.fetchPromos().map { p ->
+        Log.d("jingus", p.metadataObject?.image.toString())
+        PromoWithMetadataJson(
+            promo = p,
+            image = p.metadataObject?.image.toString(),
+            description = p.metadataObject?.description.toString(),
+        )
+        }
+    }
+
+    override val promoSubscriptionFlow = dataService.promoSubscription.toFlow()
+
     override fun fetchAppId() = resourceFlowOf { transactionService.service.mintPromoToken() }
     override fun createPromo(createPromoArgs: CreatePromoArgs) = resourceFlowOf {
 

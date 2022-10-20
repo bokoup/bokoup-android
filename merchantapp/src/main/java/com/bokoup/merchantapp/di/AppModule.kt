@@ -90,7 +90,10 @@ class AppModule {
 
     @Provides
     fun apolloClient(
-    ): ApolloClient = ApolloClient.Builder().serverUrl("https://data.api.bokoup.com/v1/graphql").build()
+    ): ApolloClient = ApolloClient.Builder()
+        .serverUrl("https://shining-sailfish-15.hasura.app/v1/graphql")
+        .webSocketServerUrl("https://shining-sailfish-15.hasura.app/v1/graphql")
+        .build()
 
     @Provides
     fun dataService(

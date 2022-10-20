@@ -2,6 +2,7 @@ package com.bokoup.merchantapp.data
 
 import com.apollographql.apollo3.ApolloClient
 import com.bokoup.merchantapp.PromoListQuery
+import com.bokoup.merchantapp.PromoListSubscription
 
 class DataService(private val apolloClient: ApolloClient) {
 
@@ -9,4 +10,6 @@ class DataService(private val apolloClient: ApolloClient) {
         val response = apolloClient.query(PromoListQuery()).execute()
         return response?.data?.promo?.filterNotNull() ?: emptyList<PromoListQuery.Promo>()
     }
+
+    val promoSubscription = apolloClient.subscription(PromoListSubscription())
 }

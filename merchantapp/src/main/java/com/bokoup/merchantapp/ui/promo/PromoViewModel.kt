@@ -3,11 +3,11 @@ package com.bokoup.merchantapp.ui.promo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bokoup.lib.ResourceFlowConsumer
-import com.bokoup.merchantapp.PromoListQuery
 import com.bokoup.merchantapp.data.DataRepo
 import com.bokoup.merchantapp.model.AppId
 import com.bokoup.merchantapp.model.CreatePromoArgs
 import com.bokoup.merchantapp.model.CreatePromoResult
+import com.bokoup.merchantapp.model.PromoWithMetadataJson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,9 @@ class PromoViewModel @Inject constructor(
 ) : ViewModel() {
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    val promosConsumer = ResourceFlowConsumer<List<PromoListQuery.Promo>>(viewModelScope)
+    val promoSubscription = dataRepo.promoSubscriptionFlow
+
+    val promosConsumer = ResourceFlowConsumer<List<PromoWithMetadataJson>>(viewModelScope)
     val appIdConsumer = ResourceFlowConsumer<AppId>(viewModelScope)
     val createPromoConsumer = ResourceFlowConsumer<CreatePromoResult>(viewModelScope)
 
@@ -33,8 +35,6 @@ class PromoViewModel @Inject constructor(
 
     val isLoadingConsumer = merge(
         promosConsumer.isLoading,
-        appIdConsumer.isLoading,
-        createPromoConsumer.isLoading,
     )
 
     fun fetchPromos() = viewModelScope.launch(dispatcher) {
@@ -55,7 +55,7 @@ class PromoViewModel @Inject constructor(
     }
 
     init {
-        fetchAppId()
+        fetchPromos()
     }
 
 }

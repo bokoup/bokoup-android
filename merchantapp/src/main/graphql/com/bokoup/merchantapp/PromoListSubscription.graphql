@@ -1,4 +1,4 @@
-query PromoListQuery {
+subscription PromoListSubscription {
   promo {
     id
     owner
@@ -12,8 +12,8 @@ query PromoListQuery {
       name
       symbol
       uri
-      image: metadataJson(path:"image")
-      description: metadataJson(path:"description")
+      image: metadataJson(path: "image")
+      description: metadataJson(path: "description")
     }
     mintObject {
       id
