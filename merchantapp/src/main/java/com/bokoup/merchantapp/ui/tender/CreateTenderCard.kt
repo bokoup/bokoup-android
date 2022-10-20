@@ -85,7 +85,7 @@ fun CreateTenderCard(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(4.dp),
+                        .padding(vertical = 4.dp, horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -95,7 +95,7 @@ fun CreateTenderCard(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(4.dp),
+                        .padding(vertical = 4.dp, horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

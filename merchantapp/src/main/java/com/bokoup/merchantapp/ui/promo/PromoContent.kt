@@ -3,6 +3,8 @@ package com.bokoup.merchantapp.ui.tender
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +30,7 @@ fun PromoContent(
     padding: PaddingValues,
     channel: Channel<String>,
     cardState: Boolean,
-    setCardState: (Boolean) -> Unit
+    setCardState: (Boolean) -> Unit,
 ) {
     val promos by viewModel.promosConsumer.data.collectAsState()
     val isLoading by viewModel.isLoadingConsumer.collectAsState(false)
@@ -42,7 +44,7 @@ fun PromoContent(
 
     Loading(isLoading)
 
-    Box(contentAlignment = Alignment.Center) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.verticalScroll(rememberScrollState()).padding(padding)) {
         if ((promos != null) && !isLoading) {
             LazyColumn(
                 modifier = Modifier
@@ -57,24 +59,14 @@ fun PromoContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(text = promo.metadataObject!!.name, Modifier.weight(0.3f))
-                        Text(text = promo.metadataObject!!.symbol, Modifier.weight(0.4f))
+                        Text(text = promo.metadataObject.symbol, Modifier.weight(0.4f))
                     }
                 }
             }
         }
         if (cardState) {
             CreatePromoCard(setCardState = setCardState,
-                createPromo = { name,
-                    symbol,
-                    description,
-                    maxMint,
-                    maxBurn,
-                    enabled,
-                    collectionName,
-                    collectionFamily,
-                    isMutable,
-                    memo
-                 -> Unit  })
+                createPromo = { viewModel.createPromo(it) })
         }
     }
 }

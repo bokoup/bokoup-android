@@ -1,15 +1,13 @@
 package com.bokoup.merchantapp.data
 
 import com.bokoup.merchantapp.model.AppId
+import com.bokoup.merchantapp.model.CreatePromoResult
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.PUT
-import retrofit2.http.Part
+import retrofit2.http.*
 
 
 class TransactionService {
@@ -17,7 +15,7 @@ class TransactionService {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val retrofit: Retrofit = Retrofit.Builder().baseUrl("https://tx.api.bokoup.xyz")
+    private val retrofit: Retrofit = Retrofit.Builder().baseUrl("http://10.0.2.2:8080")
         .client(OkHttpClient.Builder().apply {addInterceptor(interceptor = interceptor)}.build())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -26,11 +24,13 @@ class TransactionService {
 
 public interface PromoService {
     @Multipart
-    @PUT("promo/create")
-    fun createPromo(
-        @Part("image") photo: RequestBody,
-        @Part("metadata") description: RequestBody
-    ): String
+    @Streaming
+    @POST("promo/create")
+    suspend fun createPromo(
+        @Part metadata: MultipartBody.Part,
+        @Part image: MultipartBody.Part,
+        @Part memo: MultipartBody.Part?
+    ): CreatePromoResult
 
     @GET("promo/mint/mintString/message")
     suspend fun mintPromoToken(): AppId

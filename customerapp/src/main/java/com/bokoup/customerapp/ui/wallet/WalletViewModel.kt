@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+//https://github.com/android/security-samples/tree/main/FileLocker
 @HiltViewModel
 class WalletViewModel @Inject constructor(private val repo: AddressRepo) : ViewModel() {
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO

@@ -99,9 +99,12 @@ class AppModule {
 
     @Provides
     fun dataRepo(
+        @ApplicationContext
+        context: Context,
         dataService: DataService,
         transactionService: TransactionService
     ): DataRepo = DataRepoImpl(
+        context,
         dataService,
         transactionService
     )

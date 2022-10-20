@@ -8,6 +8,7 @@ gradle = '7.5.1'
 viewmodel = "2.5.1"
 navigation = "2.5.2"
 compose = "1.3.0-beta03"
+accompanist = "0.26.4-beta"
 compose-compiler = "1.3.1"
 room = "2.4.3"
 hilt-dagger = "2.44"
@@ -92,6 +93,7 @@ androidx-compose-material3 = "androidx.compose.material3:material3:1.0.0-beta03"
 androidx-compose-material3-window = "androidx.compose.material3:material3-window-size-class:1.0.0-beta03"
 androidx-compose-material = "androidx.compose.material:material:1.3.0-beta03"
 
+accompanist-placeholder = { module = "com.google.accompanist:accompanist-placeholder-material", version.ref = "accompanist" }
 
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
 androidx-activity = "androidx.activity:activity-compose:1.6.0"

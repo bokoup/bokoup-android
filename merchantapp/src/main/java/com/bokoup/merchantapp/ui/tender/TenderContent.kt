@@ -43,12 +43,11 @@ fun TenderContent(
 
     Loading(isLoading)
 
-    Box(contentAlignment = Alignment.Center) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(padding)) {
         if ((tenders != null) && !isLoading) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
                     .padding(horizontal = 16.dp)
             ) {
                 items(tenders!!) {tender ->
