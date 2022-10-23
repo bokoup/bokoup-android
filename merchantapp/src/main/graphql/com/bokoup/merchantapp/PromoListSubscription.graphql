@@ -1,5 +1,5 @@
 subscription PromoListSubscription {
-  promo {
+  promo(orderBy: {metadataObject: {name: ASC}}) {
     id
     owner
     maxMint

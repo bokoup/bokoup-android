@@ -31,11 +31,13 @@ class ScanViewModel @Inject constructor(
         return if (isSolana) {
             try {
                 val url = URL(value?.substring(protocol.length))
-                if (url.host == baseUrl.host && url.path.length > 2) {
+                if (url.host == baseUrl.host && url.path.length > 3) {
                     val path = url.path.split("/")
                     ScanResult.BokoupUrl(
-                        mintString = path[path.size - 2],
-                        promoName = path[path.size - 1],
+                        action = path[2],
+                        mintString = path[3],
+                        message = path[4],
+                        memo = path.getOrNull(5),
                         barcode = barcode
                     )
                 } else {

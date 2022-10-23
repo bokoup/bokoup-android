@@ -1,8 +1,11 @@
 package com.bokoup.merchantapp.ui.promo
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.lib.ResourceFlowConsumer
+import com.bokoup.lib.resourceFlowOf
 import com.bokoup.merchantapp.data.DataRepo
 import com.bokoup.merchantapp.model.AppId
 import com.bokoup.merchantapp.model.CreatePromoArgs
@@ -13,11 +16,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import java.net.URL
+import java.net.URLEncoder
 import javax.inject.Inject
 
 @HiltViewModel
 class PromoViewModel @Inject constructor(
     private val dataRepo: DataRepo,
+    private val qrCodeGenerator: QRCodeGenerator,
 ) : ViewModel() {
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
@@ -37,6 +43,19 @@ class PromoViewModel @Inject constructor(
         promosConsumer.isLoading,
     )
 
+    val qrCodeConsumer = ResourceFlowConsumer<Bitmap>(viewModelScope)
+
+    fun getQrCode(mintString: String, message: String) = viewModelScope.launch(Dispatchers.IO) {
+        qrCodeConsumer.collectFlow(
+            resourceFlowOf {
+                val url = URL("http://99.91.8.130:8080/promo/mint/$mintString/${URLEncoder.encode(message, "utf-8")}")
+                val content = "solana:$url"
+                qrCodeGenerator.generateQR(content)
+            }
+        )
+
+    }
+
     fun fetchPromos() = viewModelScope.launch(dispatcher) {
         promosConsumer.collectFlow(
             dataRepo.fetchPromos()
@@ -55,7 +74,7 @@ class PromoViewModel @Inject constructor(
     }
 
     init {
-        fetchPromos()
+//        fetchPromos()
     }
 
 }

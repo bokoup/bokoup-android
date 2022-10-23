@@ -1,0 +1,7 @@
+subscription DelegateTokenSubscription {
+    delegatePromoToken(orderBy: {createdAt: DESC}, limit: 1) {
+        signature
+        tokenOwner
+        reference: memo(path: "memo")
+    }
+}

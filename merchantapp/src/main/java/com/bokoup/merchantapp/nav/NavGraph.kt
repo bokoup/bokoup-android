@@ -10,7 +10,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.bokoup.merchantapp.ui.customer.share.ShareScreen
+import com.bokoup.merchantapp.ui.customer.CustomerScreen
 import com.bokoup.merchantapp.ui.promo.PromoScreen
 import com.bokoup.merchantapp.ui.tender.TenderScreen
 import kotlinx.coroutines.channels.Channel
@@ -41,13 +41,14 @@ fun NavGraph(navController: NavHostController, startDestination: String, openDra
         navController = navController, startDestination = startDestination
     ) {
         composable(
-            route = Screen.Customer.route,
-            arguments = listOf(navArgument("tokenId") {
-                type = NavType.StringType; nullable = true
+//            "${Screen.Approve.name}?action={action}?mintString={mintString}?message={message}?memo={memo}"
+            route = "${Screen.Customer.route}?orderId={orderId}",
+            arguments = listOf(navArgument("orderId") {
+                type = NavType.StringType;
             })
         ) { backStackEntry ->
-            val tokenId = backStackEntry.arguments?.getString("tokenId") ?: ""
-            ShareScreen(snackbarHostState = snackbarHostState)
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            CustomerScreen(snackbarHostState = snackbarHostState, orderId = orderId)
         }
         composable(
             route = Screen.Tender.route,

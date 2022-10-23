@@ -10,10 +10,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface SolanaRepo {
     val solanaSubscription: SolanaSubscription
+    fun signAndSendWithSubscription(
+        transaction: String,
+        keyPair: KeyPair
+    ): Flow<Resource<TransactionSignature>>
     fun signAndSend(
         transaction: String,
         keyPair: KeyPair
     ): Flow<Resource<TransactionSignature>>
-
     suspend fun airDrop(accountKey: PublicKey, lamports: Lamports = 2_000_000_000): TransactionSignature
 }

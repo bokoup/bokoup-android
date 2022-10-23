@@ -1,13 +1,11 @@
 package com.bokoup.merchantapp.ui.tender
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -17,6 +15,7 @@ import coil.compose.AsyncImage
 import com.bokoup.lib.Loading
 import com.bokoup.merchantapp.ui.promo.CreatePromoCard
 import com.bokoup.merchantapp.ui.promo.PromoViewModel
+import com.bokoup.merchantapp.ui.promo.QRCodeCard
 import kotlinx.coroutines.channels.Channel
 
 //https://developer.android.com/codelabs/jetpack-compose-basics#8
@@ -31,16 +30,25 @@ fun PromoContent(
     cardState: Boolean,
     setCardState: (Boolean) -> Unit,
 ) {
-    val promos by viewModel.promosConsumer.data.collectAsState()
+//    val promos by viewModel.promosConsumer.data.collectAsState()
     val isLoading by viewModel.isLoadingConsumer.collectAsState(false)
     val error: Throwable? by viewModel.errorConsumer.collectAsState(null)
     val uriHandler = LocalUriHandler.current
     val promoSubscription by viewModel.promoSubscription.collectAsState(null)
+    val qrCode by viewModel.qrCodeConsumer.data.collectAsState()
+
+    var (mintCardState, setMintCardState) =  remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(error) {
         if (error != null) {
             channel.trySend(error!!.message.toString())
         }
+    }
+
+    LaunchedEffect(promoSubscription) {
+        setMintCardState(false)
     }
 
     Loading(isLoading)
@@ -49,9 +57,9 @@ fun PromoContent(
         .padding(padding)
         ) {
         if ((promoSubscription?.data?.promo != null) && !isLoading) {
-            val chunks = promoSubscription!!.data!!.promo.chunked(4)
+            val chunks = promoSubscription!!.data!!.promo.chunked(6)
             Column(modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())) {
                 chunks.map {
                     Row(
@@ -61,11 +69,18 @@ fun PromoContent(
                     ) {
                         it.map { promo ->
                             val link =
-                                "https://explorer.solana.com/address/" + promo.mintObject?.id + "?cluster=custom&customUrl=http%3A%2F%2F10.0.2.2%3A8899"
+                                "https://explorer.solana.com/address/" + promo.mintObject?.id + "?cluster=custom&customUrl=http%3A%2F%2F99.91.8.130%3A8899"
                             ElevatedCard(
                                 modifier = Modifier
-                                    .width(200.dp)
+                                    .width(250.dp)
                                     .padding(8.dp)
+                                    .clickable {
+                                        viewModel.getQrCode(
+                                            promo.mintObject?.id!!,
+                                            "Approve to receive promo ${promo.metadataObject?.name!!}"
+                                        )
+                                        setMintCardState(true)
+                                    }
                             ) {
                                 Column(
                                     modifier.fillMaxWidth(),
@@ -160,6 +175,10 @@ fun PromoContent(
         if (cardState) {
             CreatePromoCard(setCardState = setCardState,
                 createPromo = { viewModel.createPromo(it) })
+        }
+        if (mintCardState && qrCode != null) {
+            QRCodeCard(setCardState = setMintCardState,
+                qrCode = qrCode!!)
         }
     }
 }

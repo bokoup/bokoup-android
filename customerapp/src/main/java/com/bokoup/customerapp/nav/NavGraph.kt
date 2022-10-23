@@ -65,23 +65,34 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
             route = Screen.Scan.name
         ) {
             val route =
-            ScanScreen(openDrawer = openDrawer,
-                snackbarHostState = snackbarHostState,
-                navigateToApprove = { mintString, promoName -> navController.navigate("" +
-                        "${Screen.Approve.name}?mintString=${mintString}?promoName=${promoName}") })
+                ScanScreen(openDrawer = openDrawer,
+                    snackbarHostState = snackbarHostState,
+                    navigateToApprove = { action, mintString, message, memo ->
+                        navController.navigate(
+                            "" +
+                                    "${Screen.Approve.name}?action=${action}?mintString=${mintString}?message=${message}?memo=${memo}"
+                        )
+                    })
         }
         composable(
-            route = "${Screen.Approve.name}?mintString={mintString}?promoName={promoName}",
+            route = "${Screen.Approve.name}?action={action}?mintString={mintString}?message={message}?memo={memo}",
             arguments = listOf(
+                navArgument("action") { type = NavType.StringType; nullable = true },
                 navArgument("mintString") { type = NavType.StringType; nullable = true },
-                navArgument("promoName") { type = NavType.StringType; nullable = true })
+                navArgument("message") { type = NavType.StringType; nullable = true },
+                navArgument("memo") {
+                    type = androidx.navigation.NavType.StringType; nullable = true
+                }),
         ) {
             ApproveScreen(
                 openDrawer = openDrawer,
                 snackbarHostState = snackbarHostState,
                 channel = channel,
+                action = it.arguments?.getString("action"),
                 mintString = it.arguments?.getString("mintString"),
-                promoName = it.arguments?.getString("promoName")
+                message = it.arguments?.getString("message"),
+                memo = it.arguments?.getString("memo"),
+                navigateToTokens = { navController.navigate(Screen.Tokens.name) }
             )
         }
         composable(

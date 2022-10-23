@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.NFC" />
 
     <application
         android:name=".MerchantApp"
@@ -36,24 +37,37 @@
             android:name=".ui.CustomerActivity"
             android:exported="true"
             android:theme="@style/Theme.App">
-            <meta-data
-                android:name="clover.intent.meta.CUSTOMER_TENDER_IMAGE"
-                android:resource="@mipmap/ic_launcher" />
+            <!--            <meta-data-->
+            <!--                android:name="clover.intent.meta.CUSTOMER_TENDER_IMAGE"-->
+            <!--                android:resource="@mipmap/ic_launcher" />-->
             <intent-filter>
-                <action android:name="clover.intent.action.CUSTOMER_TENDER" />
+                <!--                <action android:name="clover.intent.action.MODIFY_ORDER" />-->
+                <action android:name="com.bokoup.CUSTOMER_FACING_ACTIVITY" />
+                <category android:name="com.clover.cfp.ACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.MerchantActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App">
+            <intent-filter>
+                <action android:name="clover.intent.action.MODIFY_ORDER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-<!--        <receiver-->
-<!--            android:name=".ui.MyBroadcastReceiver"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.clover.sdk.app.intent.action.APP_NOTIFICATION" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
+        <receiver
+            android:name=".ui.MyBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.nfc.action.TAG_DISCOVERED"/>-->
+            <!--                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>-->
+            <!--                <action android:name="com.clover.sdk.app.intent.action.APP_NOTIFICATION" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--            </intent-filter>-->
+        </receiver>
     </application>
 
 </manifest>

@@ -77,11 +77,11 @@ dependencies {
     implementation libs.zxing
     implementation libs.okhttp.logging
     implementation libs.apollo.runtime
-    implementation libs.moshi.moshi
     implementation libs.bundles.retrofit
     implementation libs.material.icons.extended
     implementation libs.coil.compose
     implementation libs.accompanist.placeholder
+    implementation libs.clover.cfp
     testImplementation libs.android.junit
     androidTestImplementation libs.bundles.test
     debugImplementation libs.bundles.debug

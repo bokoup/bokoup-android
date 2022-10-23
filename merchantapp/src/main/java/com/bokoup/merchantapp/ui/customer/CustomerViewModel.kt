@@ -1,15 +1,17 @@
-package com.bokoup.merchantapp.ui.customer.share
+package com.bokoup.merchantapp.ui.customer
 
 import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.lib.ResourceFlowConsumer
 import com.bokoup.lib.resourceFlowOf
+import com.bokoup.merchantapp.data.DataRepo
 import com.bokoup.merchantapp.data.SolanaRepo
 import com.clover.sdk.v1.Intents
 import com.dgsd.ksol.model.TransactionSignature
@@ -23,26 +25,32 @@ import java.net.URLEncoder
 import javax.inject.Inject
 
 @HiltViewModel
-class ShareViewModel @Inject constructor(
+class CustomerViewModel @Inject constructor(
     private val qrCodeGenerator: QRCodeGenerator,
     private val notificationReceiver: NotificationReceiver,
-    private val solanaRepo: SolanaRepo
+    private val nfcReceiver: NFCReceiver,
+    private val solanaRepo: SolanaRepo,
+    private val dataRepo: DataRepo
 ) : ViewModel() {
-    val qrCodeConsumer = ResourceFlowConsumer<Pair<String, Bitmap>>(viewModelScope)
+    val qrCodeConsumer = ResourceFlowConsumer<Bitmap>(viewModelScope)
     val notification = notificationReceiver.notification
     val _signatureSubscription: MutableStateFlow<TransactionSignature?> = MutableStateFlow(null)
     val signatureSubscription = _signatureSubscription.asStateFlow()
 
+    val delegateTokenSubscription = dataRepo.delegateTokenSubscriptionFlow
 
-    fun getQrCode() = viewModelScope.launch(Dispatchers.IO) {
+    fun getQrCode(orderId: String) = viewModelScope.launch(Dispatchers.IO) {
+        val mintString: String = "4oEvwvZkHdrRJFHSnpnrVCxaibeUVKqAkiTJEfXXNfiD"
+            val message: String = "Approve to delegate Promo 2"
+        val memo: String = orderId
         qrCodeConsumer.collectFlow(
             resourceFlowOf {
-                val url = URL("https://demo-api-6jgxmo2doq-uw.a.run.app/promo/9cppW5ugbEHygEicY8vWcgyCRNqkbdTiwjqtBDpH7913/Promo2")
-                val content = "solana:${URLEncoder.encode(url.toString(), "utf-8")}"
-                Pair("bokoup", qrCodeGenerator.generateQR(content))
+                val url = URL("http://99.91.8.130:8080/promo/delegate/$mintString/${URLEncoder.encode(message, "utf-8")}/${URLEncoder.encode(memo, "utf-8")}")
+                val content = "solana:$url"
+                Log.d("jing", content)
+                qrCodeGenerator.generateQR(content)
             }
         )
-
     }
 
     fun registerNotificationReceiver() {
@@ -51,6 +59,14 @@ class ShareViewModel @Inject constructor(
 
     fun unregisterNotificationReceiver() {
         notificationReceiver.unregister()
+    }
+
+    fun registerNFCReceiver() {
+        nfcReceiver.register()
+    }
+
+    fun unregisterNFCReceiver() {
+        nfcReceiver.unregister()
     }
     fun cancel(activity: Activity) {
         val data = Intent()

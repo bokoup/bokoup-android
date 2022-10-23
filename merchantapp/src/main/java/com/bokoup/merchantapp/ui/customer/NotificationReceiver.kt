@@ -1,4 +1,4 @@
-package com.bokoup.merchantapp.ui.customer.share
+package com.bokoup.merchantapp.ui.customer
 
 import android.content.BroadcastReceiver
 import android.content.Context

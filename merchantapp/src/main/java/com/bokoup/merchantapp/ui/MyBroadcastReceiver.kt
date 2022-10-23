@@ -7,7 +7,6 @@ import android.util.Log
 import android.widget.Toast
 import com.clover.sdk.v1.app.AppNotificationIntent.EXTRA_PAYLOAD
 
-
 private const val TAG = "MyBroadcastReceiver"
 
 class MyBroadcastReceiver : BroadcastReceiver() {

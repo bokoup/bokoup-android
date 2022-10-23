@@ -30,6 +30,7 @@ class DataRepoImpl(
     }
 
     override val promoSubscriptionFlow = dataService.promoSubscription.toFlow()
+    override val delegateTokenSubscriptionFlow = dataService.delegateTokenSubscription.toFlow()
 
     override fun fetchAppId() = resourceFlowOf { transactionService.service.mintPromoToken() }
     override fun createPromo(createPromoArgs: CreatePromoArgs) = resourceFlowOf {

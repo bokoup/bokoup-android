@@ -15,15 +15,19 @@ class TokenRepoImpl(
 ) : TokenRepo {
     override fun getTokensFromRoom() = tokenDao.getTokens()
     override fun getApiId(
-        mintString: String,
-        promoName: String
-    ): Flow<Resource<TokenApiId>> =
-        resourceFlowOf { tokenApi.getApiId(mintString, promoName) }
-
-    override fun getTokenTransaction(
+        action: String,
         mintString: String,
         promoName: String,
+        memo: String?
+    ): Flow<Resource<TokenApiId>> =
+        resourceFlowOf { tokenApi.getApiId(action, mintString, promoName, memo) }
+
+    override fun getTokenTransaction(
+        action: String,
+        mintString: String,
+        message: String,
+        memo: String?,
         address: String
     ): Flow<Resource<TokenApiResponse>> =
-        resourceFlowOf { tokenApi.getTokenTransaction(mintString, promoName, address) }
+        resourceFlowOf { tokenApi.getTokenTransaction(action, mintString, message, memo, address) }
 }

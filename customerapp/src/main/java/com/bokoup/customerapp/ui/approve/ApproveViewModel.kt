@@ -1,5 +1,6 @@
 package com.bokoup.customerapp.ui.approve
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bokoup.customerapp.data.net.TokenApiId
@@ -47,20 +48,23 @@ class ApproveViewModel @Inject constructor(
         }
     }
 
-    fun getAppId(mintString: String, promoName: String) {
+    fun getAppId(action: String, mintString: String, message: String, memo: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             appIdConsumer.collectFlow(
-                tokenRepo.getApiId(mintString, promoName)
+                tokenRepo.getApiId(action, mintString, message, memo)
             )
         }
     }
 
-    fun getTokenTransaction(mintString: String, promoName: String, address: String) {
+    fun getTokenTransaction(action: String, mintString: String, message: String, address: String, memo: String?) {
+        Log.d("gin", "action")
         viewModelScope.launch(Dispatchers.IO) {
             transactionConsumer.collectFlow(
                 tokenRepo.getTokenTransaction(
+                    action,
                     mintString,
-                    promoName,
+                    message,
+                    memo,
                     address
                 )
             )

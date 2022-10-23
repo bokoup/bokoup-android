@@ -1,0 +1,20 @@
+subscription TokenAccountListSubscription {
+  tokenAccount(orderBy: {mintObject: {promoObject: {metadataObject: {name: ASC}}}}) {
+    id
+    owner
+    amount
+    delegatedAmount
+    mintObject {
+      id
+      promoObject {
+        metadataObject {
+          name
+          symbol
+          image: metadataJson(path: "image")
+          description: metadataJson(path: "description")
+          modifiedAt
+        }
+      }
+    }
+  }
+}

@@ -8,10 +8,18 @@ import kotlinx.coroutines.flow.Flow
 
 interface TokenRepo {
     fun getTokensFromRoom(): Flow<List<Token>>
-    fun getApiId(mintString: String, promoName: String): Flow<Resource<TokenApiId>>
-    fun getTokenTransaction(
+    fun getApiId(
+        action: String,
         mintString: String,
         promoName: String,
+        memo: String?
+    ): Flow<Resource<TokenApiId>>
+
+    fun getTokenTransaction(
+        action: String,
+        mintString: String,
+        message: String,
+        memo: String?,
         address: String
     ): Flow<Resource<TokenApiResponse>>
 

@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id "dagger.hilt.android.plugin"
+    id 'com.apollographql.apollo3'
 }
 
 android {
@@ -69,8 +70,14 @@ dependencies {
     implementation libs.bundles.retrofit
     implementation libs.coil.compose
     implementation libs.okhttp.logging
+    implementation libs.coil.compose
+    implementation libs.accompanist.placeholder
+    implementation libs.apollo.runtime
     testImplementation libs.android.junit
     androidTestImplementation libs.bundles.test
     debugImplementation libs.bundles.debug
     kapt libs.bundles.kapt
+}
+apollo {
+    packageName.set("com.bokoup.customerapp")
 }

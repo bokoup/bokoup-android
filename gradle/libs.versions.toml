@@ -132,7 +132,10 @@ camera-view = { module = "androidx.camera:camera-view", version.ref = "camerax" 
 camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "camerax" }
 camera-mlkit = { module = "androidx.camera:camera-mlkit-vision", version.ref = "camerax" }
 
-clover = "com.clover.sdk:clover-android-sdk:latest.release"
+clover = "com.clover.sdk:clover-android-sdk:248.4"
+clover-cfp = "com.clover.cfp:clover-cfp-sdk:4.2.1"
+
+datastore = "androidx.datastore:datastore-preferences:1.0.0"
 
 [bundles]
 compose = ["androidx-compose-ui", "androidx-compose-ui-tooling", "androidx-compose-ui-tooling-preview"]

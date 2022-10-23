@@ -18,8 +18,8 @@ class TokenApi {
         level = HttpLoggingInterceptor.Level.BODY
     }
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://demo-api-6jgxmo2doq-uw.a.run.app/")
-        .client(OkHttpClient.Builder().apply {addInterceptor(interceptor = interceptor)}.build())
+        .baseUrl("http://99.91.8.130:8080/")
+        .client(OkHttpClient.Builder().apply { addInterceptor(interceptor = interceptor) }.build())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
@@ -27,17 +27,29 @@ class TokenApi {
 
     private val tokenService = retrofit.create(TokenService::class.java)
 
-    suspend fun getApiId(mintString: String, promoName: String): TokenApiId = withContext(Dispatchers.Default) {
-        val result = tokenService.get(mintString, promoName)
-        result
-    }
+    suspend fun getApiId(
+        action: String,
+        mintString: String,
+        message: String,
+        memo: String?,
+    ): TokenApiId =
+        withContext(Dispatchers.Default) {
+            val result = tokenService.get(action, mintString, message, memo)
+            result
+        }
 
-    suspend fun getTokenTransaction(mintString: String, promoName: String, account: String): TokenApiResponse = withContext(Dispatchers.Default) {
+    suspend fun getTokenTransaction(
+        action: String,
+        mintString: String,
+        message: String,
+        memo: String?,
+        account: String
+    ): TokenApiResponse = withContext(Dispatchers.Default) {
         val accountData = AccountData(account = account)
-        var result = TokenApiResponse(transaction = "jingus", message = "malingus")
+        var result = TokenApiResponse(transaction = "j", message = "k")
         try {
-            result = tokenService.post(accountData, mintString, promoName)
-        } catch(e: Throwable) {
+            result = tokenService.post(accountData, action, mintString, message, memo)
+        } catch (e: Throwable) {
             Log.d("jingus", e.toString())
 
         }
@@ -46,11 +58,22 @@ class TokenApi {
 }
 
 interface TokenService {
-    @GET("promo/{mintString}/{promoName}")
-    suspend fun get(@Path("mintString") mintString: String, @Path("promoName") promoName: String) : TokenApiId
+    @GET("promo/{action}/{mintString}/{message}/{memo}")
+    suspend fun get(
+        @Path("action") action: String,
+        @Path("mintString") mintString: String,
+        @Path("message") message: String,
+        @Path("memo") memo: String?
+    ): TokenApiId
 
-    @POST("promo/{mintString}/{promoName}")
-    suspend fun post(@Body accountData: AccountData, @Path("mintString") mintString: String, @Path("promoName") promoName: String) : TokenApiResponse
+    @POST("promo/{action}/{mintString}/{message}/{memo}")
+    suspend fun post(
+        @Body accountData: AccountData,
+        @Path("action") action: String,
+        @Path("mintString") mintString: String,
+        @Path("message") message: String,
+        @Path("memo") memo: String?
+    ): TokenApiResponse
 }
 
 data class TokenApiId(val label: String, val icon: String)

@@ -2,14 +2,14 @@ package com.bokoup.customerapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.bokoup.customerapp.data.net.AddressDao
-import com.bokoup.customerapp.data.net.ChainDb
-import com.bokoup.customerapp.data.net.TokenApi
-import com.bokoup.customerapp.data.net.TokenDao
+import com.apollographql.apollo3.ApolloClient
+import com.bokoup.customerapp.data.net.*
 import com.bokoup.customerapp.data.repo.AddressRepoImpl
+import com.bokoup.customerapp.data.repo.DataRepoImpl
 import com.bokoup.customerapp.data.repo.SolanaRepoImpl
 import com.bokoup.customerapp.data.repo.TokenRepoImpl
 import com.bokoup.customerapp.dom.repo.AddressRepo
+import com.bokoup.customerapp.dom.repo.DataRepo
 import com.bokoup.customerapp.dom.repo.SolanaRepo
 import com.bokoup.customerapp.dom.repo.TokenRepo
 import com.bokoup.customerapp.util.QRCodeScanner
@@ -30,6 +30,27 @@ import okhttp3.logging.HttpLoggingInterceptor
 @InstallIn(SingletonComponent::class)
 class AppModule() {
     @Provides
+    fun apolloClient(
+    ): ApolloClient = ApolloClient.Builder()
+        .serverUrl("https://shining-sailfish-15.hasura.app/v1/graphql")
+        .webSocketServerUrl("https://shining-sailfish-15.hasura.app/v1/graphql")
+        .build()
+
+    @Provides
+    fun dataService(
+        apolloClient: ApolloClient
+    ): DataService = DataService(apolloClient)
+
+    @Provides
+    fun dataRepo(
+        dataService: DataService,
+        addressDao: AddressDao
+    ): DataRepo = DataRepoImpl(
+        dataService,
+        addressDao
+    )
+
+    @Provides
     fun chainDb(
         @ApplicationContext
         context: Context
@@ -37,7 +58,8 @@ class AppModule() {
         context,
         ChainDb::class.java,
         "token"
-    ).build()
+    ).allowMainThreadQueries().build()
+    // total friggin hack because I am idiot
 
     @Provides
     fun tokenDao(
@@ -50,7 +72,7 @@ class AppModule() {
 
     @Provides
     fun solanaApi(
-    ) = SolanaApi(Cluster.DEVNET, OkHttpClient.Builder().apply {
+    ) = SolanaApi(Cluster.Custom("http://99.91.8.130:8899", "ws://99.91.8.130:8899"), OkHttpClient.Builder().apply {
         addInterceptor(interceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })

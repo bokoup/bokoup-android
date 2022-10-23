@@ -12,10 +12,10 @@ import retrofit2.http.*
 
 class TransactionService {
     private val interceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        level = HttpLoggingInterceptor.Level.HEADERS
     }
 
-    private val retrofit: Retrofit = Retrofit.Builder().baseUrl("http://10.0.2.2:8080")
+    private val retrofit: Retrofit = Retrofit.Builder().baseUrl("http://99.91.8.130:8080")
         .client(OkHttpClient.Builder().apply {addInterceptor(interceptor = interceptor)}.build())
         .addConverterFactory(GsonConverterFactory.create())
         .build()

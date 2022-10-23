@@ -16,7 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App"
-        tools:targetApi="33">
+        tools:targetApi="33"
+        android:usesCleartextTraffic="true"
+        >
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

@@ -16,6 +16,7 @@ import com.bokoup.customerapp.ui.common.AppScreen
 import com.dgsd.ksol.model.KeyPair
 import com.dgsd.ksol.model.TransactionSignature
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 
 @Composable
 @ExperimentalMaterialApi
@@ -25,8 +26,11 @@ fun ApproveScreen(
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit,
     channel: Channel<String>,
+    action: String?,
     mintString: String?,
-    promoName: String?
+    message: String?,
+    memo: String?,
+    navigateToTokens: () -> Unit
 ) {
 
     val keyPair: KeyPair? by viewModel.keyPairConsumer.data.collectAsState()
@@ -43,14 +47,21 @@ fun ApproveScreen(
     }
 
     LaunchedEffect(key1 = keyPair) {
-        if (keyPair != null && mintString != null && promoName != null) {
-            viewModel.getAppId(mintString, promoName)
+        if (keyPair != null && action != null && mintString != null && message != null) {
+            viewModel.getAppId(action, mintString, message, memo)
             viewModel.getTokenTransaction(
-                mintString, promoName,
-                keyPair!!.publicKey.toString()
+                action, mintString, message,
+                keyPair!!.publicKey.toString(), memo
             )
         }
     }
+
+    LaunchedEffect(signature) {
+        if (signature != null) {
+            delay(1000)
+                navigateToTokens()
+            }
+        }
 
     AppScreen(
         snackbarHostState = snackbarHostState,

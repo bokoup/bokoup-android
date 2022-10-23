@@ -5,7 +5,9 @@ import androidx.room.Room
 import com.apollographql.apollo3.ApolloClient
 import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.merchantapp.data.*
-import com.bokoup.merchantapp.ui.customer.share.NotificationReceiver
+import com.bokoup.merchantapp.ui.customer.NFCReceiver
+import com.bokoup.merchantapp.ui.customer.NotificationReceiver
+import com.clover.cfp.connector.RemoteDeviceConnector
 import com.clover.sdk.util.CloverAccount
 import com.clover.sdk.v1.tender.TenderConnector
 import com.dgsd.ksol.LocalTransactions
@@ -68,6 +70,12 @@ class AppModule {
     ) = NotificationReceiver(context)
 
     @Provides
+    fun nFCReceiver(
+        @ApplicationContext
+        context: Context
+    ) = NFCReceiver(context)
+
+    @Provides
     fun solanaApi(
     ) = SolanaApi(Cluster.DEVNET, OkHttpClient.Builder().apply {
         addInterceptor(interceptor = HttpLoggingInterceptor().apply {
@@ -115,5 +123,11 @@ class AppModule {
     @Provides
     fun transactionService(
     ) = TransactionService()
+
+    @Provides
+    fun remoteDeviceConnector(
+        @ApplicationContext
+        context: Context
+    ) = RemoteDeviceConnector(context, CloverAccount.getAccount(context))
 
 }

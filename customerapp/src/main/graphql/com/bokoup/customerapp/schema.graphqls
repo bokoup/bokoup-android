@@ -1,0 +1,1183 @@
+schema {
+  query: query_root
+  subscription: subscription_root
+}
+
+"""whether this query should be cached (Hasura Cloud only)"""
+directive @cached(
+  """measured in seconds"""
+  ttl: Int! = 60
+
+  """refresh the cache entry"""
+  refresh: Boolean! = false
+) on QUERY
+
+"""
+Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'.
+"""
+input BigintComparisonExp {
+  _eq: bigint
+  _gt: bigint
+  _gte: bigint
+  _in: [bigint!]
+  _isNull: Boolean
+  _lt: bigint
+  _lte: bigint
+  _neq: bigint
+  _nin: [bigint!]
+}
+
+"""
+Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'.
+"""
+input BooleanComparisonExp {
+  _eq: Boolean
+  _gt: Boolean
+  _gte: Boolean
+  _in: [Boolean!]
+  _isNull: Boolean
+  _lt: Boolean
+  _lte: Boolean
+  _neq: Boolean
+  _nin: [Boolean!]
+}
+
+"""ordering argument of a cursor"""
+enum CursorOrdering {
+  """ascending ordering of the cursor"""
+  ASC
+
+  """descending ordering of the cursor"""
+  DESC
+}
+
+"""
+Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
+"""
+input IntComparisonExp {
+  _eq: Int
+  _gt: Int
+  _gte: Int
+  _in: [Int!]
+  _isNull: Boolean
+  _lt: Int
+  _lte: Int
+  _neq: Int
+  _nin: [Int!]
+}
+
+input JsonbCastExp {
+  String: StringComparisonExp
+}
+
+"""
+Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'.
+"""
+input JsonbComparisonExp {
+  _cast: JsonbCastExp
+
+  """is the column contained in the given json value"""
+  _containedIn: jsonb
+
+  """does the column contain the given json value at the top level"""
+  _contains: jsonb
+  _eq: jsonb
+  _gt: jsonb
+  _gte: jsonb
+
+  """does the string exist as a top-level key in the column"""
+  _hasKey: String
+
+  """do all of these strings exist as top-level keys in the column"""
+  _hasKeysAll: [String!]
+
+  """do any of these strings exist as top-level keys in the column"""
+  _hasKeysAny: [String!]
+  _in: [jsonb!]
+  _isNull: Boolean
+  _lt: jsonb
+  _lte: jsonb
+  _neq: jsonb
+  _nin: [jsonb!]
+}
+
+"""
+columns and relationships of "metadata"
+"""
+type Metadata {
+  collectionKey: String
+  collectionVerified: Boolean
+  createdAt: timestamptz!
+  editionNonce: Int
+  id: String!
+  isMutable: Boolean!
+  key: String!
+  metadataJson(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  mint: String!
+  modifiedAt: timestamptz!
+  name: String!
+  primarySaleHappened: Boolean!
+  sellerFeeBasisPoints: Int!
+  slot: bigint!
+  symbol: String!
+  tokenStandard: String
+  updateAuthority: String!
+  uri: String!
+  usesRemaining: bigint
+  usesTotal: bigint
+  usesUseMethod: String
+  writeVersion: bigint!
+}
+
+"""
+Boolean expression to filter rows from the table "metadata". All fields are combined with a logical 'AND'.
+"""
+input MetadataBoolExp {
+  _and: [MetadataBoolExp!]
+  _not: MetadataBoolExp
+  _or: [MetadataBoolExp!]
+  collectionKey: StringComparisonExp
+  collectionVerified: BooleanComparisonExp
+  createdAt: TimestamptzComparisonExp
+  editionNonce: IntComparisonExp
+  id: StringComparisonExp
+  isMutable: BooleanComparisonExp
+  key: StringComparisonExp
+  metadataJson: JsonbComparisonExp
+  mint: StringComparisonExp
+  modifiedAt: TimestamptzComparisonExp
+  name: StringComparisonExp
+  primarySaleHappened: BooleanComparisonExp
+  sellerFeeBasisPoints: IntComparisonExp
+  slot: BigintComparisonExp
+  symbol: StringComparisonExp
+  tokenStandard: StringComparisonExp
+  updateAuthority: StringComparisonExp
+  uri: StringComparisonExp
+  usesRemaining: BigintComparisonExp
+  usesTotal: BigintComparisonExp
+  usesUseMethod: StringComparisonExp
+  writeVersion: BigintComparisonExp
+}
+
+"""Ordering options when selecting data from "metadata"."""
+input MetadataOrderBy {
+  collectionKey: OrderBy
+  collectionVerified: OrderBy
+  createdAt: OrderBy
+  editionNonce: OrderBy
+  id: OrderBy
+  isMutable: OrderBy
+  key: OrderBy
+  metadataJson: OrderBy
+  mint: OrderBy
+  modifiedAt: OrderBy
+  name: OrderBy
+  primarySaleHappened: OrderBy
+  sellerFeeBasisPoints: OrderBy
+  slot: OrderBy
+  symbol: OrderBy
+  tokenStandard: OrderBy
+  updateAuthority: OrderBy
+  uri: OrderBy
+  usesRemaining: OrderBy
+  usesTotal: OrderBy
+  usesUseMethod: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+select columns of table "metadata"
+"""
+enum MetadataSelectColumn {
+  """column name"""
+  collectionKey
+
+  """column name"""
+  collectionVerified
+
+  """column name"""
+  createdAt
+
+  """column name"""
+  editionNonce
+
+  """column name"""
+  id
+
+  """column name"""
+  isMutable
+
+  """column name"""
+  key
+
+  """column name"""
+  metadataJson
+
+  """column name"""
+  mint
+
+  """column name"""
+  modifiedAt
+
+  """column name"""
+  name
+
+  """column name"""
+  primarySaleHappened
+
+  """column name"""
+  sellerFeeBasisPoints
+
+  """column name"""
+  slot
+
+  """column name"""
+  symbol
+
+  """column name"""
+  tokenStandard
+
+  """column name"""
+  updateAuthority
+
+  """column name"""
+  uri
+
+  """column name"""
+  usesRemaining
+
+  """column name"""
+  usesTotal
+
+  """column name"""
+  usesUseMethod
+
+  """column name"""
+  writeVersion
+}
+
+"""
+columns and relationships of "mint"
+"""
+type Mint {
+  createdAt: timestamptz
+  decimals: Int!
+  freezeAuthority: String
+  id: String!
+  isInitialized: Boolean!
+  mintAuthority: String
+  modifiedAt: timestamptz
+
+  """An object relationship"""
+  promoObject: Promo
+  slot: bigint!
+  supply: bigint!
+
+  """An array relationship"""
+  tokenAccounts(
+    """distinct select on columns"""
+    distinctOn: [TokenAccountSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [TokenAccountOrderBy!]
+
+    """filter the rows returned"""
+    where: TokenAccountBoolExp
+  ): [TokenAccount!]!
+  writeVersion: bigint!
+}
+
+"""
+Boolean expression to filter rows from the table "mint". All fields are combined with a logical 'AND'.
+"""
+input MintBoolExp {
+  _and: [MintBoolExp!]
+  _not: MintBoolExp
+  _or: [MintBoolExp!]
+  createdAt: TimestamptzComparisonExp
+  decimals: IntComparisonExp
+  freezeAuthority: StringComparisonExp
+  id: StringComparisonExp
+  isInitialized: BooleanComparisonExp
+  mintAuthority: StringComparisonExp
+  modifiedAt: TimestamptzComparisonExp
+  promoObject: PromoBoolExp
+  slot: BigintComparisonExp
+  supply: BigintComparisonExp
+  tokenAccounts: TokenAccountBoolExp
+  writeVersion: BigintComparisonExp
+}
+
+"""Ordering options when selecting data from "mint"."""
+input MintOrderBy {
+  createdAt: OrderBy
+  decimals: OrderBy
+  freezeAuthority: OrderBy
+  id: OrderBy
+  isInitialized: OrderBy
+  mintAuthority: OrderBy
+  modifiedAt: OrderBy
+  promoObject: PromoOrderBy
+  slot: OrderBy
+  supply: OrderBy
+  tokenAccountsAggregate: TokenAccountAggregateOrderBy
+  writeVersion: OrderBy
+}
+
+"""
+select columns of table "mint"
+"""
+enum MintSelectColumn {
+  """column name"""
+  createdAt
+
+  """column name"""
+  decimals
+
+  """column name"""
+  freezeAuthority
+
+  """column name"""
+  id
+
+  """column name"""
+  isInitialized
+
+  """column name"""
+  mintAuthority
+
+  """column name"""
+  modifiedAt
+
+  """column name"""
+  slot
+
+  """column name"""
+  supply
+
+  """column name"""
+  writeVersion
+}
+
+"""column ordering options"""
+enum OrderBy {
+  """in ascending order, nulls last"""
+  ASC
+
+  """in ascending order, nulls first"""
+  ASC_NULLS_FIRST
+
+  """in ascending order, nulls last"""
+  ASC_NULLS_LAST
+
+  """in descending order, nulls first"""
+  DESC
+
+  """in descending order, nulls first"""
+  DESC_NULLS_FIRST
+
+  """in descending order, nulls last"""
+  DESC_NULLS_LAST
+}
+
+"""
+columns and relationships of "promo"
+"""
+type Promo {
+  burnCount: Int!
+  createdAt: timestamptz!
+  id: String!
+  maxBurn: Int
+  maxMint: Int
+  metadata: String!
+
+  """An object relationship"""
+  metadataObject: Metadata
+  mint: String!
+  mintCount: Int!
+
+  """An object relationship"""
+  mintObject: Mint
+  modifiedAt: timestamptz!
+  owner: String!
+  slot: bigint!
+  writeVersion: bigint!
+}
+
+"""
+Boolean expression to filter rows from the table "promo". All fields are combined with a logical 'AND'.
+"""
+input PromoBoolExp {
+  _and: [PromoBoolExp!]
+  _not: PromoBoolExp
+  _or: [PromoBoolExp!]
+  burnCount: IntComparisonExp
+  createdAt: TimestamptzComparisonExp
+  id: StringComparisonExp
+  maxBurn: IntComparisonExp
+  maxMint: IntComparisonExp
+  metadata: StringComparisonExp
+  metadataObject: MetadataBoolExp
+  mint: StringComparisonExp
+  mintCount: IntComparisonExp
+  mintObject: MintBoolExp
+  modifiedAt: TimestamptzComparisonExp
+  owner: StringComparisonExp
+  slot: BigintComparisonExp
+  writeVersion: BigintComparisonExp
+}
+
+"""Ordering options when selecting data from "promo"."""
+input PromoOrderBy {
+  burnCount: OrderBy
+  createdAt: OrderBy
+  id: OrderBy
+  maxBurn: OrderBy
+  maxMint: OrderBy
+  metadata: OrderBy
+  metadataObject: MetadataOrderBy
+  mint: OrderBy
+  mintCount: OrderBy
+  mintObject: MintOrderBy
+  modifiedAt: OrderBy
+  owner: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+select columns of table "promo"
+"""
+enum PromoSelectColumn {
+  """column name"""
+  burnCount
+
+  """column name"""
+  createdAt
+
+  """column name"""
+  id
+
+  """column name"""
+  maxBurn
+
+  """column name"""
+  maxMint
+
+  """column name"""
+  metadata
+
+  """column name"""
+  mint
+
+  """column name"""
+  mintCount
+
+  """column name"""
+  modifiedAt
+
+  """column name"""
+  owner
+
+  """column name"""
+  slot
+
+  """column name"""
+  writeVersion
+}
+
+"""
+Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'.
+"""
+input StringComparisonExp {
+  _eq: String
+  _gt: String
+  _gte: String
+
+  """does the column match the given case-insensitive pattern"""
+  _ilike: String
+  _in: [String!]
+
+  """
+  does the column match the given POSIX regular expression, case insensitive
+  """
+  _iregex: String
+  _isNull: Boolean
+
+  """does the column match the given pattern"""
+  _like: String
+  _lt: String
+  _lte: String
+  _neq: String
+
+  """does the column NOT match the given case-insensitive pattern"""
+  _nilike: String
+  _nin: [String!]
+
+  """
+  does the column NOT match the given POSIX regular expression, case insensitive
+  """
+  _niregex: String
+
+  """does the column NOT match the given pattern"""
+  _nlike: String
+
+  """
+  does the column NOT match the given POSIX regular expression, case sensitive
+  """
+  _nregex: String
+
+  """does the column NOT match the given SQL regular expression"""
+  _nsimilar: String
+
+  """
+  does the column match the given POSIX regular expression, case sensitive
+  """
+  _regex: String
+
+  """does the column match the given SQL regular expression"""
+  _similar: String
+}
+
+"""
+Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'.
+"""
+input TimestamptzComparisonExp {
+  _eq: timestamptz
+  _gt: timestamptz
+  _gte: timestamptz
+  _in: [timestamptz!]
+  _isNull: Boolean
+  _lt: timestamptz
+  _lte: timestamptz
+  _neq: timestamptz
+  _nin: [timestamptz!]
+}
+
+"""
+columns and relationships of "token_account"
+"""
+type TokenAccount {
+  amount: bigint!
+  closeAuthority: String
+  createdAt: timestamptz!
+  delegate: String
+  delegatedAmount: bigint
+  id: String!
+  isNative: bigint
+  mint: String!
+
+  """An object relationship"""
+  mintObject: Mint
+  modifiedAt: timestamptz!
+  owner: String!
+  slot: bigint!
+  state: String!
+  writeVersion: bigint!
+}
+
+"""
+order by aggregate values of table "token_account"
+"""
+input TokenAccountAggregateOrderBy {
+  avg: token_account_avg_order_by
+  count: OrderBy
+  max: token_account_max_order_by
+  min: token_account_min_order_by
+  stddev: token_account_stddev_order_by
+  stddev_pop: token_account_stddev_pop_order_by
+  stddev_samp: token_account_stddev_samp_order_by
+  sum: token_account_sum_order_by
+  var_pop: token_account_var_pop_order_by
+  var_samp: token_account_var_samp_order_by
+  variance: token_account_variance_order_by
+}
+
+"""
+Boolean expression to filter rows from the table "token_account". All fields are combined with a logical 'AND'.
+"""
+input TokenAccountBoolExp {
+  _and: [TokenAccountBoolExp!]
+  _not: TokenAccountBoolExp
+  _or: [TokenAccountBoolExp!]
+  amount: BigintComparisonExp
+  closeAuthority: StringComparisonExp
+  createdAt: TimestamptzComparisonExp
+  delegate: StringComparisonExp
+  delegatedAmount: BigintComparisonExp
+  id: StringComparisonExp
+  isNative: BigintComparisonExp
+  mint: StringComparisonExp
+  mintObject: MintBoolExp
+  modifiedAt: TimestamptzComparisonExp
+  owner: StringComparisonExp
+  slot: BigintComparisonExp
+  state: StringComparisonExp
+  writeVersion: BigintComparisonExp
+}
+
+"""Ordering options when selecting data from "token_account"."""
+input TokenAccountOrderBy {
+  amount: OrderBy
+  closeAuthority: OrderBy
+  createdAt: OrderBy
+  delegate: OrderBy
+  delegatedAmount: OrderBy
+  id: OrderBy
+  isNative: OrderBy
+  mint: OrderBy
+  mintObject: MintOrderBy
+  modifiedAt: OrderBy
+  owner: OrderBy
+  slot: OrderBy
+  state: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+select columns of table "token_account"
+"""
+enum TokenAccountSelectColumn {
+  """column name"""
+  amount
+
+  """column name"""
+  closeAuthority
+
+  """column name"""
+  createdAt
+
+  """column name"""
+  delegate
+
+  """column name"""
+  delegatedAmount
+
+  """column name"""
+  id
+
+  """column name"""
+  isNative
+
+  """column name"""
+  mint
+
+  """column name"""
+  modifiedAt
+
+  """column name"""
+  owner
+
+  """column name"""
+  slot
+
+  """column name"""
+  state
+
+  """column name"""
+  writeVersion
+}
+
+scalar bigint
+
+scalar jsonb
+
+"""
+Streaming cursor of the table "metadata"
+"""
+input metadata_streamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: metadata_streamCursorValueInput!
+
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input metadata_streamCursorValueInput {
+  collectionKey: String
+  collectionVerified: Boolean
+  createdAt: timestamptz
+  editionNonce: Int
+  id: String
+  isMutable: Boolean
+  key: String
+  metadataJson: jsonb
+  mint: String
+  modifiedAt: timestamptz
+  name: String
+  primarySaleHappened: Boolean
+  sellerFeeBasisPoints: Int
+  slot: bigint
+  symbol: String
+  tokenStandard: String
+  updateAuthority: String
+  uri: String
+  usesRemaining: bigint
+  usesTotal: bigint
+  usesUseMethod: String
+  writeVersion: bigint
+}
+
+"""
+Streaming cursor of the table "mint"
+"""
+input mint_streamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: mint_streamCursorValueInput!
+
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input mint_streamCursorValueInput {
+  createdAt: timestamptz
+  decimals: Int
+  freezeAuthority: String
+  id: String
+  isInitialized: Boolean
+  mintAuthority: String
+  modifiedAt: timestamptz
+  slot: bigint
+  supply: bigint
+  writeVersion: bigint
+}
+
+"""
+Streaming cursor of the table "promo"
+"""
+input promo_streamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: promo_streamCursorValueInput!
+
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input promo_streamCursorValueInput {
+  burnCount: Int
+  createdAt: timestamptz
+  id: String
+  maxBurn: Int
+  maxMint: Int
+  metadata: String
+  mint: String
+  mintCount: Int
+  modifiedAt: timestamptz
+  owner: String
+  slot: bigint
+  writeVersion: bigint
+}
+
+type query_root {
+  """
+  fetch data from the table: "metadata"
+  """
+  metadata(
+    """distinct select on columns"""
+    distinctOn: [MetadataSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [MetadataOrderBy!]
+
+    """filter the rows returned"""
+    where: MetadataBoolExp
+  ): [Metadata!]!
+
+  """fetch data from the table: "metadata" using primary key columns"""
+  metadataByPk(id: String!): Metadata
+
+  """
+  fetch data from the table: "mint"
+  """
+  mint(
+    """distinct select on columns"""
+    distinctOn: [MintSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [MintOrderBy!]
+
+    """filter the rows returned"""
+    where: MintBoolExp
+  ): [Mint!]!
+
+  """fetch data from the table: "mint" using primary key columns"""
+  mintByPk(id: String!): Mint
+
+  """
+  fetch data from the table: "promo"
+  """
+  promo(
+    """distinct select on columns"""
+    distinctOn: [PromoSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [PromoOrderBy!]
+
+    """filter the rows returned"""
+    where: PromoBoolExp
+  ): [Promo!]!
+
+  """fetch data from the table: "promo" using primary key columns"""
+  promoByPk(id: String!): Promo
+
+  """
+  fetch data from the table: "token_account"
+  """
+  tokenAccount(
+    """distinct select on columns"""
+    distinctOn: [TokenAccountSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [TokenAccountOrderBy!]
+
+    """filter the rows returned"""
+    where: TokenAccountBoolExp
+  ): [TokenAccount!]!
+
+  """fetch data from the table: "token_account" using primary key columns"""
+  tokenAccountByPk(id: String!): TokenAccount
+}
+
+type subscription_root {
+  """
+  fetch data from the table: "metadata"
+  """
+  metadata(
+    """distinct select on columns"""
+    distinctOn: [MetadataSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [MetadataOrderBy!]
+
+    """filter the rows returned"""
+    where: MetadataBoolExp
+  ): [Metadata!]!
+
+  """fetch data from the table: "metadata" using primary key columns"""
+  metadataByPk(id: String!): Metadata
+
+  """
+  fetch data from the table in a streaming manner : "metadata"
+  """
+  metadataStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [metadata_streamCursorInput]!
+
+    """filter the rows returned"""
+    where: MetadataBoolExp
+  ): [Metadata!]!
+
+  """
+  fetch data from the table: "mint"
+  """
+  mint(
+    """distinct select on columns"""
+    distinctOn: [MintSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [MintOrderBy!]
+
+    """filter the rows returned"""
+    where: MintBoolExp
+  ): [Mint!]!
+
+  """fetch data from the table: "mint" using primary key columns"""
+  mintByPk(id: String!): Mint
+
+  """
+  fetch data from the table in a streaming manner : "mint"
+  """
+  mintStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [mint_streamCursorInput]!
+
+    """filter the rows returned"""
+    where: MintBoolExp
+  ): [Mint!]!
+
+  """
+  fetch data from the table: "promo"
+  """
+  promo(
+    """distinct select on columns"""
+    distinctOn: [PromoSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [PromoOrderBy!]
+
+    """filter the rows returned"""
+    where: PromoBoolExp
+  ): [Promo!]!
+
+  """fetch data from the table: "promo" using primary key columns"""
+  promoByPk(id: String!): Promo
+
+  """
+  fetch data from the table in a streaming manner : "promo"
+  """
+  promoStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [promo_streamCursorInput]!
+
+    """filter the rows returned"""
+    where: PromoBoolExp
+  ): [Promo!]!
+
+  """
+  fetch data from the table: "token_account"
+  """
+  tokenAccount(
+    """distinct select on columns"""
+    distinctOn: [TokenAccountSelectColumn!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    orderBy: [TokenAccountOrderBy!]
+
+    """filter the rows returned"""
+    where: TokenAccountBoolExp
+  ): [TokenAccount!]!
+
+  """fetch data from the table: "token_account" using primary key columns"""
+  tokenAccountByPk(id: String!): TokenAccount
+
+  """
+  fetch data from the table in a streaming manner : "token_account"
+  """
+  tokenAccountStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [token_account_streamCursorInput]!
+
+    """filter the rows returned"""
+    where: TokenAccountBoolExp
+  ): [TokenAccount!]!
+}
+
+scalar timestamptz
+
+"""
+order by avg() on columns of table "token_account"
+"""
+input token_account_avg_order_by {
+  amount: OrderBy
+  delegatedAmount: OrderBy
+  isNative: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+order by max() on columns of table "token_account"
+"""
+input token_account_max_order_by {
+  amount: OrderBy
+  closeAuthority: OrderBy
+  createdAt: OrderBy
+  delegate: OrderBy
+  delegatedAmount: OrderBy
+  id: OrderBy
+  isNative: OrderBy
+  mint: OrderBy
+  modifiedAt: OrderBy
+  owner: OrderBy
+  slot: OrderBy
+  state: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+order by min() on columns of table "token_account"
+"""
+input token_account_min_order_by {
+  amount: OrderBy
+  closeAuthority: OrderBy
+  createdAt: OrderBy
+  delegate: OrderBy
+  delegatedAmount: OrderBy
+  id: OrderBy
+  isNative: OrderBy
+  mint: OrderBy
+  modifiedAt: OrderBy
+  owner: OrderBy
+  slot: OrderBy
+  state: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+order by stddev() on columns of table "token_account"
+"""
+input token_account_stddev_order_by {
+  amount: OrderBy
+  delegatedAmount: OrderBy
+  isNative: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+order by stddev_pop() on columns of table "token_account"
+"""
+input token_account_stddev_pop_order_by {
+  amount: OrderBy
+  delegatedAmount: OrderBy
+  isNative: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+order by stddev_samp() on columns of table "token_account"
+"""
+input token_account_stddev_samp_order_by {
+  amount: OrderBy
+  delegatedAmount: OrderBy
+  isNative: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+Streaming cursor of the table "token_account"
+"""
+input token_account_streamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: token_account_streamCursorValueInput!
+
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input token_account_streamCursorValueInput {
+  amount: bigint
+  closeAuthority: String
+  createdAt: timestamptz
+  delegate: String
+  delegatedAmount: bigint
+  id: String
+  isNative: bigint
+  mint: String
+  modifiedAt: timestamptz
+  owner: String
+  slot: bigint
+  state: String
+  writeVersion: bigint
+}
+
+"""
+order by sum() on columns of table "token_account"
+"""
+input token_account_sum_order_by {
+  amount: OrderBy
+  delegatedAmount: OrderBy
+  isNative: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+order by var_pop() on columns of table "token_account"
+"""
+input token_account_var_pop_order_by {
+  amount: OrderBy
+  delegatedAmount: OrderBy
+  isNative: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+order by var_samp() on columns of table "token_account"
+"""
+input token_account_var_samp_order_by {
+  amount: OrderBy
+  delegatedAmount: OrderBy
+  isNative: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
+"""
+order by variance() on columns of table "token_account"
+"""
+input token_account_variance_order_by {
+  amount: OrderBy
+  delegatedAmount: OrderBy
+  isNative: OrderBy
+  slot: OrderBy
+  writeVersion: OrderBy
+}
+
