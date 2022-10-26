@@ -5,11 +5,12 @@ import androidx.room.Room
 import com.apollographql.apollo3.ApolloClient
 import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.merchantapp.data.*
-import com.bokoup.merchantapp.ui.customer.NFCReceiver
 import com.bokoup.merchantapp.ui.customer.NotificationReceiver
+import com.bokoup.merchantapp.ui.merchant.BarCodeReceiver
 import com.clover.cfp.connector.RemoteDeviceConnector
 import com.clover.sdk.util.CloverAccount
 import com.clover.sdk.v1.tender.TenderConnector
+import com.clover.sdk.v3.scanner.BarcodeScanner
 import com.dgsd.ksol.LocalTransactions
 import com.dgsd.ksol.SolanaApi
 import com.dgsd.ksol.model.Cluster
@@ -70,10 +71,16 @@ class AppModule {
     ) = NotificationReceiver(context)
 
     @Provides
-    fun nFCReceiver(
+    fun barCodeReceiver(
         @ApplicationContext
         context: Context
-    ) = NFCReceiver(context)
+    ) = BarCodeReceiver(context)
+
+    @Provides
+    fun barCodeScanner(
+        @ApplicationContext
+        context: Context
+    ) = BarcodeScanner(context)
 
     @Provides
     fun solanaApi(

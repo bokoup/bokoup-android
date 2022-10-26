@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.core.view.WindowCompat
 import com.bokoup.merchantapp.ui.merchant.MerchantScreen
+import com.bokoup.merchantapp.ui.theme.AppTheme
 import com.clover.sdk.v1.Intents
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,10 +26,12 @@ class MerchantActivity : ComponentActivity() {
 //        }
         val orderId = intent.getStringExtra(Intents.EXTRA_ORDER_ID) ?: ""
         setContent {
-            MerchantScreen(
-                snackbarHostState = SnackbarHostState(),
-                orderId = orderId,
-            )
+            AppTheme{
+                MerchantScreen(
+                    snackbarHostState = SnackbarHostState(),
+                    orderId = orderId,
+                )
+            }
         }
     }
 }

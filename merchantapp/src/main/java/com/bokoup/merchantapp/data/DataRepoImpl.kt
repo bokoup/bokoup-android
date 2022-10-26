@@ -10,6 +10,8 @@ import com.bokoup.merchantapp.model.CreatePromoArgs
 import com.bokoup.merchantapp.model.PromoWithMetadataJson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -18,19 +20,25 @@ class DataRepoImpl(
     val context: Context,
     private val dataService: DataService,
     private val transactionService: TransactionService
-): DataRepo {
-    override fun fetchPromos() = resourceFlowOf { dataService.fetchPromos().map { p ->
-        Log.d("jingus", p.metadataObject?.image.toString())
-        PromoWithMetadataJson(
-            promo = p,
-            image = p.metadataObject?.image.toString(),
-            description = p.metadataObject?.description.toString(),
-        )
+) : DataRepo {
+    override fun fetchPromos() = resourceFlowOf {
+        dataService.fetchPromos().map { p ->
+            Log.d("jingus", p.metadataObject?.image.toString())
+            PromoWithMetadataJson(
+                promo = p,
+                image = p.metadataObject?.image.toString(),
+                description = p.metadataObject?.description.toString(),
+            )
         }
     }
 
-    override val promoSubscriptionFlow = dataService.promoSubscription.toFlow()
-    override val delegateTokenSubscriptionFlow = dataService.delegateTokenSubscription.toFlow()
+    override fun fetchTokenAccounts(owner: String) =
+        resourceFlowOf { dataService.fetchTokenAccounts(owner) }
+
+    override val promoSubscriptionFlow = dataService.promoSubscription.toFlow().flowOn(
+        Dispatchers.IO
+    )
+    override val delegateTokenSubscription =  dataService.getDelegateTokenSubscription().toFlow().flowOn(Dispatchers.IO)
 
     override fun fetchAppId() = resourceFlowOf { transactionService.service.mintPromoToken() }
     override fun createPromo(createPromoArgs: CreatePromoArgs) = resourceFlowOf {
@@ -49,7 +57,7 @@ class DataRepoImpl(
             val attribute = JsonObject()
             attribute.addProperty("maxMint", maxMint.toInt())
             attributes.add(attribute)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             Unit
         }
 
@@ -57,7 +65,7 @@ class DataRepoImpl(
             val attribute = JsonObject()
             attribute.addProperty("maxBurn", maxBurn.toInt())
             attributes.add(attribute)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             Unit
         }
         if (attributes.size() > 0) {
@@ -85,10 +93,10 @@ class DataRepoImpl(
             "image",
             contentInfo!!.first,
             stream!!.readBytes().toRequestBody(contentType.toMediaType(), 0, contentInfo!!.second)
-            )
+        )
 
         // memo part
-        val memoPart = memo?.let{
+        val memoPart = memo?.let {
             MultipartBody.Part.createFormData("memo", it)
         } ?: null
 

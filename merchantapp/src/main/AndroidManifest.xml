@@ -43,6 +43,7 @@
             <intent-filter>
                 <!--                <action android:name="clover.intent.action.MODIFY_ORDER" />-->
                 <action android:name="com.bokoup.CUSTOMER_FACING_ACTIVITY" />
+
                 <category android:name="com.clover.cfp.ACTIVITY" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -57,17 +58,19 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".ui.MyBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.nfc.action.TAG_DISCOVERED"/>-->
-            <!--                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>-->
-            <!--                <action android:name="com.clover.sdk.app.intent.action.APP_NOTIFICATION" />-->
-            <!--                <category android:name="android.intent.category.DEFAULT" />-->
-            <!--            </intent-filter>-->
-        </receiver>
+<!--        <receiver-->
+<!--            android:name=".ui.MyBroadcastReceiver"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.clover.BarcodeBroadcast" />-->
+<!--                <action android:name="android.nfc.action.TAG_DISCOVERED" />-->
+<!--                <action android:name="android.nfc.action.NDEF_DISCOVERED" />-->
+<!--                <action android:name="com.clover.sdk.app.intent.action.APP_NOTIFICATION" />-->
+
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
     </application>
 
 </manifest>

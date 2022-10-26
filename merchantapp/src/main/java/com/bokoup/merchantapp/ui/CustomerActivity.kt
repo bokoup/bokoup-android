@@ -7,10 +7,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.core.view.WindowCompat
+import com.bokoup.merchantapp.model.CustomerPayload
 import com.bokoup.merchantapp.ui.customer.CustomerScreen
+import com.bokoup.merchantapp.ui.theme.AppTheme
 import com.clover.cfp.activity.helper.CloverCFPActivityHelper
 import com.clover.cfp.activity.helper.CloverCFPCommsHelper
 import com.clover.sdk.v1.Intents
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,16 +31,18 @@ class CustomerActivity : ComponentActivity(), CloverCFPCommsHelper.MessageListen
 //            }
 //        }
         activityHelper = CloverCFPActivityHelper(this)
-
-        commsHelper = CloverCFPCommsHelper(this, intent, this)
+//        commsHelper = CloverCFPCommsHelper(this, intent, this)
 
         Log.d("jingus", activityHelper.initialPayload)
-        val orderId = intent.getStringExtra(Intents.EXTRA_ORDER_ID) ?: ""
+        val orderId = intent.getStringExtra(Intents.EXTRA_ORDER_ID) ?: activityHelper.initialPayload
+        val customerPayload = Gson().fromJson(activityHelper.initialPayload, CustomerPayload::class.java)
         setContent {
-            CustomerScreen(
-                snackbarHostState = SnackbarHostState(),
-                orderId = orderId,
-            )
+            AppTheme {
+                CustomerScreen(
+                    snackbarHostState = SnackbarHostState(),
+                    customerPayload = customerPayload,
+                )
+            }
         }
     }
     override fun onMessage(payload: String) {
