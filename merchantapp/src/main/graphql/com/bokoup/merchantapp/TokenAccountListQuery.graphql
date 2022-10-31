@@ -1,5 +1,5 @@
-query TokenAccountListQuery($owner: String) {
-  tokenAccount(where: {owner: {_eq: $owner}}) {
+query TokenAccountListQuery($tokenOwner: String, $promoOwner: String) {
+  tokenAccount(where: {owner: {_eq: $tokenOwner}, mintObject: {promoObject: {owner: {_eq: $promoOwner}}}}) {
     id
     owner
     amount
@@ -7,12 +7,18 @@ query TokenAccountListQuery($owner: String) {
     mintObject {
       id
       promoObject {
+        id
+        owner
+        maxMint
+        maxBurn
+        mintCount
+        burnCount
         metadataObject {
           name
           symbol
           image: metadataJson(path: "image")
           description: metadataJson(path: "description")
-          modifiedAt
+          attributes: metadataJson(path: "attributes")
         }
       }
     }

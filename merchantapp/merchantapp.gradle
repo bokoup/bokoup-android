@@ -62,31 +62,30 @@ android {
 }
 
 dependencies {
-    implementation projects.lib
-    implementation projects.ksol
-    implementation libs.androidx.core
-    implementation libs.bundles.compose
-    implementation libs.bundles.material3
-    implementation libs.androidx.lifecycle
-    implementation libs.androidx.activity
-    implementation libs.androidx.navigation
-    implementation libs.androidx.lifecycle.viewmodel
-    implementation libs.bundles.room
-    implementation libs.bundles.hilt
-    implementation libs.clover
-    implementation libs.zxing
-    implementation libs.okhttp.logging
-    implementation libs.apollo.runtime
-    implementation libs.bundles.retrofit
-    implementation libs.material.icons.extended
-    implementation libs.coil.compose
-    implementation libs.accompanist.placeholder
-    implementation libs.clover.cfp
-    testImplementation libs.android.junit
     androidTestImplementation libs.bundles.test
     debugImplementation libs.bundles.debug
+    implementation libs.accompanist.placeholder
+    implementation libs.androidx.activity
+    implementation libs.androidx.core
+    implementation libs.androidx.lifecycle
+    implementation libs.androidx.lifecycle.viewmodel
+    implementation libs.androidx.navigation
+    implementation libs.apollo.runtime
+    implementation libs.bundles.compose
+    implementation libs.bundles.hilt
+    implementation libs.bundles.ksol
+    implementation libs.bundles.material3
+    implementation libs.bundles.retrofit
+    implementation libs.bundles.room
+    implementation libs.clover
+    implementation libs.clover.cfp
+    implementation libs.coil.compose
+    implementation libs.material.icons.extended
+    implementation libs.okhttp.logging
+    implementation libs.zxing
+    implementation projects.lib
     kapt libs.bundles.kapt
-    kapt libs.moshi.codegen
+    testImplementation libs.android.junit
 }
 
 apollo {

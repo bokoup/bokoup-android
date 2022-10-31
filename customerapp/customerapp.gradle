@@ -51,32 +51,31 @@ android {
 }
 
 dependencies {
-    implementation projects.ksol
-    implementation projects.lib
-    implementation libs.androidx.core
-    implementation libs.bundles.compose
-    implementation libs.bundles.material3
-    implementation libs.androidx.lifecycle
-    implementation libs.androidx.activity
-    implementation libs.mlkit
-    implementation libs.androidx.lifecycle.viewmodel
-    implementation libs.androidx.navigation
-    implementation libs.bundles.room
-    implementation libs.bundles.hilt
-    implementation libs.google.fonts
-    implementation libs.material.icons.extended
-    implementation libs.zxing
-    implementation libs.bundles.camerax
-    implementation libs.bundles.retrofit
-    implementation libs.coil.compose
-    implementation libs.okhttp.logging
-    implementation libs.coil.compose
-    implementation libs.accompanist.placeholder
-    implementation libs.apollo.runtime
-    testImplementation libs.android.junit
     androidTestImplementation libs.bundles.test
     debugImplementation libs.bundles.debug
+    implementation libs.accompanist.placeholder
+    implementation libs.androidx.activity
+    implementation libs.androidx.core
+    implementation libs.androidx.lifecycle
+    implementation libs.androidx.lifecycle.viewmodel
+    implementation libs.androidx.navigation
+    implementation libs.apollo.runtime
+    implementation libs.bundles.camerax
+    implementation libs.bundles.compose
+    implementation libs.bundles.hilt
+    implementation libs.bundles.ksol
+    implementation libs.bundles.material3
+    implementation libs.bundles.retrofit
+    implementation libs.bundles.room
+    implementation libs.coil.compose
+    implementation libs.google.fonts
+    implementation libs.material.icons.extended
+    implementation libs.mlkit
+    implementation libs.okhttp.logging
+    implementation libs.zxing
+    implementation projects.lib
     kapt libs.bundles.kapt
+    testImplementation libs.android.junit
 }
 apollo {
     packageName.set("com.bokoup.customerapp")

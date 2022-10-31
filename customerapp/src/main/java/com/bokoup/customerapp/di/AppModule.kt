@@ -15,9 +15,10 @@ import com.bokoup.customerapp.dom.repo.TokenRepo
 import com.bokoup.customerapp.util.QRCodeScanner
 import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.lib.SystemClipboard
-import com.dgsd.ksol.LocalTransactions
 import com.dgsd.ksol.SolanaApi
-import com.dgsd.ksol.model.Cluster
+import com.dgsd.ksol.core.LocalTransactions
+import com.dgsd.ksol.core.model.Cluster
+import com.dgsd.ksol.keygen.KeyFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -108,15 +109,21 @@ class AppModule() {
     @Provides
     fun addressRepo(
         addressDao: AddressDao,
-        solanaRepo: SolanaRepo
+        solanaRepo: SolanaRepo,
+        keyFactory: KeyFactory
     ): AddressRepo = AddressRepoImpl(
         addressDao = addressDao,
-        solanaRepo = solanaRepo
+        solanaRepo = solanaRepo,
+        keyFactory = keyFactory
     )
 
     @Provides
     fun qRCodeGenerator(
     ) = QRCodeGenerator
+
+    @Provides
+    fun keyFactory(
+    ) = KeyFactory
 
     @Provides
     fun qRCodeScanner(

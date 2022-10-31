@@ -11,8 +11,8 @@ import com.bokoup.customerapp.dom.repo.SolanaRepo
 import com.bokoup.customerapp.dom.repo.TokenRepo
 import com.bokoup.lib.ResourceFlowConsumer
 import com.bokoup.lib.mapData
-import com.dgsd.ksol.model.KeyPair
-import com.dgsd.ksol.model.TransactionSignature
+import com.dgsd.ksol.core.model.KeyPair
+import com.dgsd.ksol.core.model.TransactionSignature
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

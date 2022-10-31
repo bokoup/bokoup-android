@@ -1,4 +1,4 @@
-package com.bokoup.customerapp.dom.repo
+package com.bokoup.merchantapp.domain
 
 import com.bokoup.lib.Resource
 import com.dgsd.ksol.SolanaSubscription
@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface SolanaRepo {
     val solanaSubscription: SolanaSubscription
-    fun signAndSendWithSubscription(
-        transaction: String,
-        keyPair: KeyPair
-    ): Flow<Resource<TransactionSignature>>
+
     fun signAndSend(
         transaction: String,
         keyPair: KeyPair
     ): Flow<Resource<TransactionSignature>>
+
+//    fun signatureSubscribe(signature: TransactionSignature, )
+
     suspend fun airDrop(accountKey: PublicKey, lamports: Lamports = 2_000_000_000): TransactionSignature
 }

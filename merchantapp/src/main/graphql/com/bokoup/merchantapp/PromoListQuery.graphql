@@ -1,5 +1,5 @@
-subscription PromoListSubscription {
-  promo(orderBy: {metadataObject: {name: ASC}}) {
+query PromoListQuery {
+  promo {
     id
     owner
     maxMint

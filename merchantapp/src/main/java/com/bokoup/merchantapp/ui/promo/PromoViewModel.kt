@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.lib.ResourceFlowConsumer
 import com.bokoup.lib.resourceFlowOf
-import com.bokoup.merchantapp.data.DataRepo
+import com.bokoup.merchantapp.domain.DataRepo
 import com.bokoup.merchantapp.model.AppId
 import com.bokoup.merchantapp.model.CreatePromoArgs
 import com.bokoup.merchantapp.model.CreatePromoResult
-import com.bokoup.merchantapp.model.PromoWithMetadataJson
+import com.bokoup.merchantapp.model.PromoWithMetadata
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ class PromoViewModel @Inject constructor(
 
     val promoSubscription = dataRepo.promoSubscriptionFlow
 
-    val promosConsumer = ResourceFlowConsumer<List<PromoWithMetadataJson>>(viewModelScope)
+    val promosConsumer = ResourceFlowConsumer<List<PromoWithMetadata>>(viewModelScope)
     val appIdConsumer = ResourceFlowConsumer<AppId>(viewModelScope)
     val createPromoConsumer = ResourceFlowConsumer<CreatePromoResult>(viewModelScope)
 

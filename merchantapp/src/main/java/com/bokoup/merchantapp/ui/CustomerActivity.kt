@@ -12,7 +12,6 @@ import com.bokoup.merchantapp.ui.customer.CustomerScreen
 import com.bokoup.merchantapp.ui.theme.AppTheme
 import com.clover.cfp.activity.helper.CloverCFPActivityHelper
 import com.clover.cfp.activity.helper.CloverCFPCommsHelper
-import com.clover.sdk.v1.Intents
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,19 +30,23 @@ class CustomerActivity : ComponentActivity(), CloverCFPCommsHelper.MessageListen
 //            }
 //        }
         activityHelper = CloverCFPActivityHelper(this)
-//        commsHelper = CloverCFPCommsHelper(this, intent, this)
+        commsHelper = CloverCFPCommsHelper(this, intent, this);
 
-        Log.d("jingus", activityHelper.initialPayload)
-        val orderId = intent.getStringExtra(Intents.EXTRA_ORDER_ID) ?: activityHelper.initialPayload
+        Log.d("CustomerActivity", activityHelper.initialPayload)
         val customerPayload = Gson().fromJson(activityHelper.initialPayload, CustomerPayload::class.java)
         setContent {
             AppTheme {
                 CustomerScreen(
                     snackbarHostState = SnackbarHostState(),
                     customerPayload = customerPayload,
+                    sendMessage = { it -> commsHelper.sendMessage(it) }
                 )
             }
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        commsHelper.dispose()
     }
     override fun onMessage(payload: String) {
         if(payload == "FINISH") {

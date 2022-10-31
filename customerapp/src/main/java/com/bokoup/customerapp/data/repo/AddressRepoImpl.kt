@@ -10,12 +10,13 @@ import com.dgsd.ksol.keygen.MnemonicPhraseLength
 
 class AddressRepoImpl(
     private val addressDao: AddressDao,
-    private val solanaRepo: SolanaRepo
+    private val solanaRepo: SolanaRepo,
+    private val keyFactory: KeyFactory
 ) : AddressRepo {
 
     override suspend fun insertAddressPrep(active: Boolean?) {
-        val words = KeyFactory.createMnemonic(MnemonicPhraseLength.TWELVE)
-        val newKeyPair = KeyFactory.createKeyPairFromMnemonic(words)
+        val words = keyFactory.createMnemonic(MnemonicPhraseLength.TWELVE)
+        val newKeyPair = keyFactory.createKeyPairFromMnemonic(words)
 
         val address = Address(
             id = newKeyPair.publicKey.toString(),

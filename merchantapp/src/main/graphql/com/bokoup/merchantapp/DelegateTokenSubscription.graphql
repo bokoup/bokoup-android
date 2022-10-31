@@ -4,5 +4,9 @@ subscription DelegateTokenSubscription {
         tokenOwner
         memo
         slot
+        tokenAccountObject {
+            id
+            mint
+        }
     }
 }

@@ -3,8 +3,8 @@ package com.bokoup.merchantapp.ui.tender
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bokoup.lib.ResourceFlowConsumer
-import com.bokoup.merchantapp.data.TenderRepository
 import com.bokoup.merchantapp.data.TenderRow
+import com.bokoup.merchantapp.domain.TenderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +28,7 @@ class TenderViewModel @Inject constructor(
 
     val isLoadingConsumer = merge(
         tendersConsumer.isLoading,
-        tendersServiceConsumer.isLoading,
+//        tendersServiceConsumer.isLoading,
     )
 
     fun getTenders() = viewModelScope.launch(dispatcher) {
@@ -69,12 +69,11 @@ class TenderViewModel @Inject constructor(
         getTenders()
     }
 
+    fun connect() = viewModelScope.launch(dispatcher) {
+        tenderRepo.connectTenders()
+    }
     fun disconnect() = viewModelScope.launch(dispatcher) {
         tenderRepo.disconnectTenders()
-    }
-
-    init {
-        getTenders()
     }
 
 }

@@ -4,16 +4,23 @@ import android.content.Context
 import androidx.room.Room
 import com.apollographql.apollo3.ApolloClient
 import com.bokoup.lib.QRCodeGenerator
-import com.bokoup.merchantapp.data.*
+import com.bokoup.merchantapp.data.CloverDb
+import com.bokoup.merchantapp.data.TenderDao
+import com.bokoup.merchantapp.domain.*
+import com.bokoup.merchantapp.net.DataService
+import com.bokoup.merchantapp.net.OrderService
+import com.bokoup.merchantapp.net.TenderService
+import com.bokoup.merchantapp.net.TransactionService
 import com.bokoup.merchantapp.ui.customer.NotificationReceiver
 import com.bokoup.merchantapp.ui.merchant.BarCodeReceiver
 import com.clover.cfp.connector.RemoteDeviceConnector
 import com.clover.sdk.util.CloverAccount
 import com.clover.sdk.v1.tender.TenderConnector
+import com.clover.sdk.v3.order.OrderConnector
 import com.clover.sdk.v3.scanner.BarcodeScanner
-import com.dgsd.ksol.LocalTransactions
 import com.dgsd.ksol.SolanaApi
-import com.dgsd.ksol.model.Cluster
+import com.dgsd.ksol.core.LocalTransactions
+import com.dgsd.ksol.core.model.Cluster
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,9 +48,10 @@ class AppModule {
     ) = cloverDb.tenderDao()
 
     @Provides
-    fun cloverService(
+    fun tenderService(
         tenderConnector: TenderConnector
-    ) = CloverService(tenderConnector)
+    ) = TenderService(tenderConnector)
+
 
     @Provides
     fun qRCodeGenerator(
@@ -56,12 +64,18 @@ class AppModule {
     ) = TenderConnector(context, CloverAccount.getAccount(context), null)
 
     @Provides
+    fun orderConnector(
+        @ApplicationContext
+        context: Context
+    ) = OrderConnector(context, CloverAccount.getAccount(context), null)
+
+    @Provides
     fun tenderRepository(
         tenderDao: TenderDao,
-        cloverService: CloverService,
+        tenderService: TenderService,
     ): TenderRepository = TenderRepositoryImpl(
         tenderDao = tenderDao,
-        tenderService = cloverService,
+        tenderService = tenderService,
     )
 
     @Provides
@@ -116,15 +130,36 @@ class AppModule {
     ): DataService = DataService(apolloClient)
 
     @Provides
+    fun orderService(
+        connector: OrderConnector
+    ) = OrderService(connector)
+
+    @Provides
     fun dataRepo(
         @ApplicationContext
         context: Context,
         dataService: DataService,
-        transactionService: TransactionService
+        transactionService: TransactionService,
+        orderService: OrderService
     ): DataRepo = DataRepoImpl(
         context,
         dataService,
-        transactionService
+        transactionService,
+        orderService
+    )
+
+    @Provides
+    fun customerRepo(
+        @ApplicationContext
+        context: Context,
+        dataService: DataService,
+        orderService: OrderService,
+        txService: TransactionService
+    ): CustomerRepo = CustomerRepoImpl(
+        context,
+        dataService,
+        orderService,
+        txService
     )
 
     @Provides

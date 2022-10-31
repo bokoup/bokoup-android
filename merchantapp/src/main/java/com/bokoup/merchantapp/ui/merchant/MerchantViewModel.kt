@@ -1,13 +1,16 @@
 package com.bokoup.merchantapp.ui.merchant
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bokoup.lib.ResourceFlowConsumer
-import com.bokoup.merchantapp.TokenAccountListQuery
-import com.bokoup.merchantapp.data.DataRepo
+import com.bokoup.merchantapp.domain.DataRepo
 import com.bokoup.merchantapp.model.CustomerPayload
+import com.bokoup.merchantapp.model.TokenAccountWithMetadata
 import com.clover.cfp.connector.*
 import com.clover.sdk.v1.Intents
 import com.clover.sdk.v3.scanner.BarcodeScanner
@@ -28,19 +31,19 @@ class MerchantViewModel @Inject constructor(
     var car = CustomActivityRequest("com.bokoup.CUSTOMER_FACING_ACTIVITY", "{\"msg\"=\"Initial...\"}")
     private val _barcodeResult = barCodeReceiver.barcodeString
     val barcodeResult = _barcodeResult.asStateFlow()
+    val tokenAccountConsumer = ResourceFlowConsumer<List<TokenAccountWithMetadata>>(viewModelScope)
+    val customerActivityResult: MutableState<CustomActivityResponse?> = mutableStateOf(null)
 
-    val tokenAccountConsumer = ResourceFlowConsumer<List<TokenAccountListQuery.TokenAccount>>(viewModelScope)
-
-    fun fetchTokenAccounts(owner: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun fetchEligibleTokenAccounts(tokenOwner: String, promoOwner: String, orderId: String) = viewModelScope.launch(Dispatchers.IO) {
         tokenAccountConsumer.collectFlow(
-            dataRepo.fetchTokenAccounts(owner)
+            dataRepo.fetchEligibleTokenAccounts(tokenOwner, promoOwner, orderId)
         )
     }
 
-    fun startCustomActivity(orderId: String, tokenAccounts: List<TokenAccountListQuery.TokenAccount>, tokenOwner: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun startCustomActivity(orderId: String, tokenAccounts: List<TokenAccountWithMetadata>, tokenOwner: String) = viewModelScope.launch(Dispatchers.IO) {
         remoteDeviceConnector.resetDevice(ResetDeviceRequest())
         car.payload = Gson().toJson(CustomerPayload(orderId, tokenAccounts, tokenOwner))
-        remoteDeviceConnector.startCustomActivity(car, CustomActivityLister())
+        remoteDeviceConnector.startCustomActivity(car, CustomerActivityListener(customerActivityResult))
     }
 
     fun endCustomActivity() = viewModelScope.launch(Dispatchers.IO) {
@@ -60,19 +63,21 @@ class MerchantViewModel @Inject constructor(
         barCodeReceiver.unregister()
     }
 
-
-    init {
-        Log.d("jingus", barcodeScanner.available.toString())
+    fun approve(activity: Activity) {
+        activity.setResult(Activity.RESULT_OK)
+        activity.finish();
     }
 }
 
-class CustomActivityLister : CustomActivityListener {
+class CustomerActivityListener(private val customerActivityResult: MutableState<CustomActivityResponse?>) : CustomActivityListener {
+
     override fun onMessageFromActivity(message: MessageFromActivity) {
-        Log.d("jingus", message.toString())
+        Log.d("onMessageFromActivity", message.payload.toString())
 
     }
 
-    override fun onCustomActivityResult(p0: CustomActivityResponse?) {
-        TODO("Not yet implemented")
+    override fun onCustomActivityResult(p0: CustomActivityResponse) {
+        customerActivityResult.value = p0
+        Log.d("onCustomActivityResult", Gson().toJson(p0))
     }
 }

@@ -1,5 +1,6 @@
 package com.bokoup.merchantapp.ui.tender
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,6 +17,8 @@ import com.bokoup.lib.Loading
 import com.bokoup.merchantapp.ui.promo.CreatePromoCard
 import com.bokoup.merchantapp.ui.promo.PromoViewModel
 import com.bokoup.merchantapp.ui.promo.QRCodeCard
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import kotlinx.coroutines.channels.Channel
 
 //https://developer.android.com/codelabs/jetpack-compose-basics#8
@@ -37,7 +40,7 @@ fun PromoContent(
     val promoSubscription by viewModel.promoSubscription.collectAsState(null)
     val qrCode by viewModel.qrCodeConsumer.data.collectAsState()
 
-    var (mintCardState, setMintCardState) =  remember {
+    val (mintCardState, setMintCardState) = remember {
         mutableStateOf(false)
     }
 
@@ -51,16 +54,19 @@ fun PromoContent(
         setMintCardState(false)
     }
 
-    Loading(isLoading)
+    Loading(promoSubscription == null)
 
-    Box(contentAlignment = Alignment.Center, modifier = Modifier
-        .padding(padding)
-        ) {
+    Box(
+        contentAlignment = Alignment.Center, modifier = Modifier
+            .padding(padding)
+    ) {
         if ((promoSubscription?.data?.promo != null) && !isLoading) {
-            val chunks = promoSubscription!!.data!!.promo.chunked(6)
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())) {
+            val chunks = promoSubscription!!.data!!.promo.chunked(4)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
                 chunks.map {
                     Row(
                         modifier = Modifier
@@ -70,9 +76,18 @@ fun PromoContent(
                         it.map { promo ->
                             val link =
                                 "https://explorer.solana.com/address/" + promo.mintObject?.id + "?cluster=custom&customUrl=http%3A%2F%2F99.91.8.130%3A8899"
+                            val attributes =
+                                JsonParser().parse(Gson().toJson(promo.metadataObject?.attributes)).asJsonArray.filter {
+                                    !listOf<String>(
+                                        "maxMint",
+                                        "maxBurn"
+                                    ).contains(it.asJsonObject["trait_type"].asString)
+                                }
+
+                            Log.d("PromoContent", attributes.toString())
                             ElevatedCard(
                                 modifier = Modifier
-                                    .width(250.dp)
+                                    .width(350.dp)
                                     .padding(8.dp)
                                     .clickable {
                                         viewModel.getQrCode(
@@ -139,7 +154,7 @@ fun PromoContent(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            text = "mints:",
+                                            text = "issued:",
                                             style = MaterialTheme.typography.labelMedium
                                         )
                                         Text(
@@ -154,7 +169,7 @@ fun PromoContent(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            text = "burns:",
+                                            text = "redeemed:",
                                             style = MaterialTheme.typography.labelMedium
                                         )
                                         Text(
@@ -162,6 +177,33 @@ fun PromoContent(
                                             style = MaterialTheme.typography.bodyMedium
                                         )
                                     }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Divider(thickness = 1.dp)
+                                    }
+                                    attributes.map{ a ->
+                                        val attr = a.asJsonObject
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp, vertical = 2.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                text = attr["trait_type"].asString,
+                                                style = MaterialTheme.typography.labelMedium
+                                            )
+                                            Text(
+                                                text = attr["value"].asString,
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                        }
+                                    }
+
                                 }
                             }
 
@@ -170,15 +212,16 @@ fun PromoContent(
                 }
             }
 
-
         }
         if (cardState) {
             CreatePromoCard(setCardState = setCardState,
                 createPromo = { viewModel.createPromo(it) })
         }
         if (mintCardState && qrCode != null) {
-            QRCodeCard(setCardState = setMintCardState,
-                qrCode = qrCode!!)
+            QRCodeCard(
+                setCardState = setMintCardState,
+                qrCode = qrCode!!
+            )
         }
     }
 }

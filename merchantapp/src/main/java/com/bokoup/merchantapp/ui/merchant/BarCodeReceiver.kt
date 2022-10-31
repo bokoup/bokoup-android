@@ -34,3 +34,5 @@ class BarCodeReceiver(private val context: Context) {
         context.unregisterReceiver(broadcastReceiver)
     }
 }
+
+// https://clover.github.io/clover-android-sdk/com/clover/sdk/v1/Intents.html#ACTION_PAYMENT_PROCESSED

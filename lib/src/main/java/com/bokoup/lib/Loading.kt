@@ -1,5 +1,6 @@
 package com.bokoup.lib
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -11,6 +12,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Loading(isLoading: Boolean) {
+    Log.d("Loading", isLoading.toString())
     if (isLoading) {
         Column(
             modifier = Modifier.fillMaxSize(),

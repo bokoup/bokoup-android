@@ -12,13 +12,14 @@ fun MerchantScreen(
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit = {},
     orderId: String,
+    promoOwner: String
 ) {
     AppScreen(
         snackbarHostState = snackbarHostState,
         openDrawer = openDrawer,
         screen = Screen.Merchant,
         content = {
-            MerchantContent(padding = it, orderId = orderId)
+            MerchantContent(padding = it, orderId = orderId, promoOwner = promoOwner)
         }
     )
 

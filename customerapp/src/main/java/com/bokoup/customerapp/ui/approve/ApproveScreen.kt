@@ -13,8 +13,8 @@ import com.bokoup.customerapp.data.net.TokenApiId
 import com.bokoup.customerapp.data.net.TokenApiResponse
 import com.bokoup.customerapp.nav.Screen
 import com.bokoup.customerapp.ui.common.AppScreen
-import com.dgsd.ksol.model.KeyPair
-import com.dgsd.ksol.model.TransactionSignature
+import com.dgsd.ksol.core.model.KeyPair
+import com.dgsd.ksol.core.model.TransactionSignature
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 

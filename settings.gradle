@@ -2,7 +2,6 @@ rootProject.name = "bokoup"
 
 include ":customerapp"
 include ":merchantapp"
-include ":ksol"
 include ":lib"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

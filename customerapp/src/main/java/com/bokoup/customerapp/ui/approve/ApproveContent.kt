@@ -13,7 +13,7 @@ import coil.compose.AsyncImage
 import com.bokoup.customerapp.R
 import com.bokoup.customerapp.data.net.TokenApiId
 import com.bokoup.customerapp.ui.common.SwipeButton
-import com.dgsd.ksol.model.TransactionSignature
+import com.dgsd.ksol.core.model.TransactionSignature
 import java.net.URLDecoder
 
 

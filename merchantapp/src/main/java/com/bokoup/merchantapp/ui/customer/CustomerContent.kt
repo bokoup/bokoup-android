@@ -13,13 +13,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.bokoup.merchantapp.R
-import com.bokoup.merchantapp.TokenAccountListQuery
 import com.bokoup.merchantapp.model.DelegateMemo
+import com.bokoup.merchantapp.model.TokenAccountWithMetadata
+import com.clover.sdk.v3.order.Discount
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
+import java.text.DecimalFormat
 
 @Composable
 @ExperimentalMaterial3Api
@@ -28,40 +32,70 @@ fun CustomerContent(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     orderId: String,
-    tokenAccounts: List<TokenAccountListQuery.TokenAccount>
+    tokenAccounts: List<TokenAccountWithMetadata>,
+    sendMessage: (String) -> Unit
 ) {
     val activity = (LocalContext.current as? Activity)
     val qrCode by viewModel.qrCodeConsumer.data.collectAsState()
     val delegateTokenSubscription by viewModel.delegateTokenSubscription.collectAsState(null)
     val timestamp: MutableState<Int?> = remember { mutableStateOf(null) }
+    val order by viewModel.orderConsumer.data.collectAsState(null)
 
-    LaunchedEffect(delegateTokenSubscription) {
-        val memo = delegateTokenSubscription?.data?.delegatePromoToken?.first()?.memo
-        if (memo != null) {
-            val memoJson = Gson().toJson(memo)
+    var tokenAccountsMap by remember { mutableStateOf(tokenAccounts.associateBy { tokenAccount -> tokenAccount.tokenAccount.id }) }
+
+
+    LaunchedEffect(delegateTokenSubscription?.data?.delegatePromoToken) {
+        val trans = try {
+            delegateTokenSubscription?.data?.delegatePromoToken?.first()
+        } catch (_: Exception) {
+            null
+        }
+        if (trans != null) {
+            val memoJson = Gson().toJson(trans.memo)
             val memo = Gson().fromJson(memoJson, DelegateMemo::class.java)
-            Log.d("jingus", memoJson)
-            if (memo.orderId == orderId && memo.timestamp == timestamp.value) {
-                viewModel.approve(activity!!)
+            val tokenAccount = tokenAccountsMap[trans.tokenAccountObject?.id]
+            if (memo.orderId == orderId && memo.timestamp == timestamp.value && tokenAccount != null) {
+                val discount = Discount()
+                discount.name = tokenAccount.name
+                discount.percentage = tokenAccount.attributes["getYPercent"]?.toLong()
+                viewModel.addDiscount(orderId, discount)
             }
         }
     }
 
-    val checkedState =
-        remember { mutableStateOf(tokenAccounts.associate { tokenAccount -> tokenAccount.id to false }) }
-
-    fun updateCheckedState(thisId: String) {
-        checkedState.value = checkedState.value.keys.associate { id ->
-            if (id != thisId) {
-                id to false
-            } else {
-                if (checkedState.value[thisId]!!) {
-                    id to false
-                } else {
-                    id to true
-                }
-            }
+    LaunchedEffect(order) {
+        if (order != null) {
+            Log.d("CustomerContent", order.toString())
+            viewModel.approve(activity!!)
         }
+
+    }
+
+    LaunchedEffect(tokenAccounts) {
+        if (tokenAccounts.isEmpty()) {
+            delay(2000)
+            viewModel.approve(activity!!)
+        }
+    }
+
+
+    // Ensures only one promo can be selected.
+    fun updateCheckedState(thisId: String) {
+        tokenAccountsMap = tokenAccountsMap.entries.associate { entry ->
+
+            val selected = if (entry.key != thisId) {
+                false
+            } else {
+                !entry.value.selected
+            }
+
+            val newEntry = entry.value.copy()
+            newEntry.selected = selected
+
+
+            entry.key to newEntry
+        }
+        Log.d("updateCheckedState", tokenAccountsMap.toString())
     }
 
     Column(
@@ -73,44 +107,52 @@ fun CustomerContent(
         verticalArrangement = Arrangement.Center
     ) {
         if (qrCode == null) {
-            tokenAccounts.map { tokenAccount ->
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 32.dp, vertical = 6.dp)
-                        .clickable { updateCheckedState(tokenAccount.id) },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    AsyncImage(
-                        model = tokenAccount.mintObject?.promoObject?.metadataObject?.image,
-                        modifier = Modifier
-                            .weight(0.2f),
-                        contentDescription = null
-                    )
-                    Text(
-                        modifier = Modifier
-                            .weight(0.6f)
-                            .padding(PaddingValues(start = 32.dp)),
-                        text = tokenAccount.mintObject?.promoObject?.metadataObject?.description.toString(),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Switch(
-                        modifier = Modifier
-                            .weight(0.2f),
-                        checked = checkedState.value[tokenAccount.id]!!,
-                        onCheckedChange = { updateCheckedState(tokenAccount.id) }
-                    )
+            if (tokenAccounts.isEmpty()) {
+                Text(
+                    text = "Didn't find any eligible offers in your wallet",
+                    style = MaterialTheme.typography.headlineLarge
+                )
+            } else {
+                tokenAccountsMap.entries.map { (id, tokenAccount) ->
+                    Row(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.dp, vertical = 6.dp)
+                            .clickable { updateCheckedState(id) },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        AsyncImage(
+                            model = tokenAccount.image,
+                            modifier = Modifier.weight(0.2f),
+                            contentDescription = null
+                        )
+                        Text(
+                            modifier = Modifier
+                                .weight(0.4f)
+                                .padding(PaddingValues(start = 32.dp)),
+                            text = tokenAccount.description,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            modifier = Modifier.weight(0.2f),
+                            textAlign = TextAlign.End,
+                            text = "$ ${DecimalFormat("#,###.##").format(tokenAccount.discount.toDouble() / 100)}",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Switch(modifier = Modifier.weight(0.2f),
+                            checked = tokenAccount.selected,
+                            onCheckedChange = { updateCheckedState(id) })
+                    }
                 }
             }
         }
-        if (activity != null) {
+        if (activity != null && tokenAccounts.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
                 Button(
-                    onClick = { viewModel.cancel(activity) },
-                    colors = ButtonDefaults.buttonColors(
+                    onClick = { viewModel.cancel(activity) }, colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.surface
                     )
@@ -118,12 +160,12 @@ fun CustomerContent(
                     Text("Decline", style = MaterialTheme.typography.headlineMedium)
                 }
                 Spacer(Modifier.width(16.dp))
-                Button(
-                    onClick = {
-                        timestamp.value = (System.currentTimeMillis()/1000).toInt()
-                        viewModel.getQrCode(orderId, tokenAccounts, checkedState.value, timestamp.value!! )
-                              },
-                    enabled = checkedState.value.values.any { it }) {
+                Button(onClick = {
+                    timestamp.value = (System.currentTimeMillis() / 1000).toInt()
+                    viewModel.getQrCode(
+                        orderId, tokenAccountsMap.values.first { it.selected }, timestamp.value!!
+                    )
+                }, enabled = tokenAccountsMap.values.any { it.selected }) {
                     Text("Accept", style = MaterialTheme.typography.headlineMedium)
                 }
             }

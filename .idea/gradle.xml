@@ -12,7 +12,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/customerapp" />
-            <option value="$PROJECT_DIR$/ksol" />
             <option value="$PROJECT_DIR$/lib" />
             <option value="$PROJECT_DIR$/merchantapp" />
           </set>

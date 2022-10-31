@@ -30,6 +30,7 @@ class MerchantActivity : ComponentActivity() {
                 MerchantScreen(
                     snackbarHostState = SnackbarHostState(),
                     orderId = orderId,
+                    promoOwner = "34a7Z6VXoLoVGpd9ES311yFJfTUuyh9JN35Czc9REz3j"
                 )
             }
         }

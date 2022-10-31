@@ -27,8 +27,13 @@ fun TenderContent(
     cardState: Boolean,
     setCardState: (Boolean) -> Unit
 ) {
-    val tenders by viewModel.tendersConsumer.data.collectAsState()
-    val isLoading by viewModel.isLoadingConsumer.collectAsState(false)
+    LaunchedEffect(Unit) {
+        viewModel.connect()
+        viewModel.getTenders()
+    }
+
+    val tenders by viewModel.tendersConsumer.data.collectAsState(null)
+    val isLoading by viewModel.tendersConsumer.isLoading.collectAsState(false)
     val error: Throwable? by viewModel.errorConsumer.collectAsState(null)
 
     LaunchedEffect(error) {
@@ -41,10 +46,10 @@ fun TenderContent(
         onDispose { viewModel.disconnect() }
     }
 
-    Loading(isLoading)
+    Loading(tenders == null || (tenders != null && tenders!!.isEmpty()))
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(padding)) {
-        if ((tenders != null) && !isLoading) {
+        if (tenders != null) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -99,5 +104,6 @@ fun TenderContent(
                     )
                 })
         }
+
     }
 }
