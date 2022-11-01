@@ -4,7 +4,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import com.bokoup.merchantapp.model.CustomerPayload
-import com.bokoup.merchantapp.nav.Screen
+import com.bokoup.merchantapp.model.Screen
 import com.bokoup.merchantapp.ui.common.AppScreen
 
 @Composable

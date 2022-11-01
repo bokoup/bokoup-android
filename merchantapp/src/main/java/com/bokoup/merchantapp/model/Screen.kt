@@ -1,4 +1,4 @@
-package com.bokoup.merchantapp.nav
+package com.bokoup.merchantapp.model
 
 enum class Screen(val title: String) {
     Customer(title = "Customer"),

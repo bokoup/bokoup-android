@@ -9,7 +9,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.bokoup.merchantapp.R
-import com.bokoup.merchantapp.nav.Screen
+import com.bokoup.merchantapp.model.Screen
 import com.bokoup.merchantapp.ui.theme.AppTheme
 
 @Composable
@@ -49,6 +49,6 @@ fun AppTopBar(
 @ExperimentalMaterial3Api
 fun PreviewHomeListDrawerScreen() {
     AppTheme {
-        AppTopBar(openDrawer = { /*TODO*/ }, screen = com.bokoup.merchantapp.nav.Screen.Customer)
+        AppTopBar(openDrawer = { /*TODO*/ }, screen = Screen.Customer)
     }
 }

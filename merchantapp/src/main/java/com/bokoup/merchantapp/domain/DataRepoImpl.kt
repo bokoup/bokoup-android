@@ -72,7 +72,9 @@ class DataRepoImpl(
                     false
                 }
             }
-            eligibleBuyXCurrencyPromos.map{it -> it.discount = it.attributes["getYPercent"]?.toLong()!! * order.total / 100; it}
+            eligibleBuyXCurrencyPromos.map { it ->
+                it.discount = it.attributes["getYPercent"]?.toLong()!! * order.total / 100; it
+            }
         }
 
     override val promoSubscriptionFlow = dataService.promoSubscription.toFlow().flowOn(
@@ -87,13 +89,14 @@ class DataRepoImpl(
     override fun createPromo(createPromoArgs: CreatePromoArgs) = resourceFlowOf {
 
         val (
-            uri, name, symbol, description, maxMint, maxBurn, collection, family, memo) = createPromoArgs
+            uri, name, symbol, description, maxMint, maxBurn, collection, family, memo, promoType) = createPromoArgs
 
         // metadata part
         val metadata = JsonObject()
         metadata.addProperty("name", name)
         metadata.addProperty("symbol", symbol)
         metadata.addProperty("description", description)
+
 
         val attributes = JsonArray()
         try {
@@ -127,7 +130,6 @@ class DataRepoImpl(
         }
         val metadataPart =
             MultipartBody.Part.createFormData("metadata", metadata.toString())
-        Log.d("jingus", metadata.toString())
 
         val stream = context.contentResolver.openInputStream(uri)
         val contentType = context.contentResolver.getType(uri) ?: "image/*"

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bokoup.merchantapp.nav.NavGraph
-import com.bokoup.merchantapp.nav.Screen
+import com.bokoup.merchantapp.model.Screen
 import com.bokoup.merchantapp.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bokoup.merchantapp.R
-import com.bokoup.merchantapp.nav.Screen
+import com.bokoup.merchantapp.model.Screen
 import com.bokoup.merchantapp.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)

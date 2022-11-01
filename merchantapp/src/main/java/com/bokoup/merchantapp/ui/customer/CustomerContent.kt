@@ -92,10 +92,8 @@ fun CustomerContent(
             val newEntry = entry.value.copy()
             newEntry.selected = selected
 
-
             entry.key to newEntry
         }
-        Log.d("updateCheckedState", tokenAccountsMap.toString())
     }
 
     Column(

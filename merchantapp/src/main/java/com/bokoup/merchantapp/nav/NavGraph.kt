@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.bokoup.merchantapp.model.Screen
 import com.bokoup.merchantapp.ui.promo.PromoScreen
 import com.bokoup.merchantapp.ui.settings.SettingsScreen
 import com.bokoup.merchantapp.ui.tender.TenderScreen

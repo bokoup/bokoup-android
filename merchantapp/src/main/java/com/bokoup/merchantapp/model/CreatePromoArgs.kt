@@ -11,5 +11,6 @@ data class CreatePromoArgs(
     val maxBurn: String,
     val collectionName: String,
     val collectionFamily: String,
-    val memo: String
+    val memo: String,
+    val promoType: PromoType
 )

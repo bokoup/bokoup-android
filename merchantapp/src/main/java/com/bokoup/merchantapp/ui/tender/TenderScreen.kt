@@ -9,7 +9,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.bokoup.merchantapp.nav.Screen
+import com.bokoup.merchantapp.model.Screen
 import com.bokoup.merchantapp.ui.common.AppScreen
 import kotlinx.coroutines.channels.Channel
 
