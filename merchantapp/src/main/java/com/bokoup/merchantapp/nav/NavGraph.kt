@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.bokoup.merchantapp.ui.promo.PromoScreen
+import com.bokoup.merchantapp.ui.settings.SettingsScreen
 import com.bokoup.merchantapp.ui.tender.TenderScreen
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -46,6 +47,11 @@ fun NavGraph(navController: NavHostController, startDestination: String, openDra
             route = Screen.Promo.route,
         ) {
             PromoScreen(snackbarHostState = snackbarHostState, channel = channel, openDrawer = openDrawer)
+        }
+        composable(
+            route = Screen.Settings.route,
+        ) {
+            SettingsScreen(snackbarHostState = snackbarHostState, openDrawer = openDrawer)
         }
     }
 }

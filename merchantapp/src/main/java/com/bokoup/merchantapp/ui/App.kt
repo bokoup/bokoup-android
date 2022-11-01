@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 @ExperimentalMaterial3Api
-fun App(startDestination: String = Screen.Promo.route, widthSizeClass: WindowWidthSizeClass = WindowWidthSizeClass.Compact) {
+fun App(startDestination: String = Screen.Settings.route, widthSizeClass: WindowWidthSizeClass = WindowWidthSizeClass.Compact) {
     AppTheme {
         val navController = rememberNavController()
         val coroutineScope = rememberCoroutineScope()

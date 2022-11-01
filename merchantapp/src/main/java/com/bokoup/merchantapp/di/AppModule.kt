@@ -1,6 +1,7 @@
 package com.bokoup.merchantapp.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.apollographql.apollo3.ApolloClient
 import com.bokoup.lib.QRCodeGenerator
@@ -21,6 +22,7 @@ import com.clover.sdk.v3.scanner.BarcodeScanner
 import com.dgsd.ksol.SolanaApi
 import com.dgsd.ksol.core.LocalTransactions
 import com.dgsd.ksol.core.model.Cluster
+import com.dgsd.ksol.keygen.KeyFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -171,5 +173,24 @@ class AppModule {
         @ApplicationContext
         context: Context
     ) = RemoteDeviceConnector(context, CloverAccount.getAccount(context))
+
+    @Provides
+    fun keyFactory(
+    ) = KeyFactory
+
+    @Provides
+    fun settingsRepo(
+        keyFactory: KeyFactory,
+        sharedPref: SharedPreferences
+    ) : SettingsRepo = SettingsRepoImpl(
+        keyFactory,
+        sharedPref
+    )
+
+    @Provides
+    fun sharedPref(
+        @ApplicationContext
+        context: Context
+    ) : SharedPreferences = context.getSharedPreferences("com.bokoup.merchantapp.SETTINGS", Context.MODE_PRIVATE)
 
 }

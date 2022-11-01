@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Loyalty
 import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,12 +43,20 @@ fun AppDrawer(
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
         NavigationDrawerItem(
+            label = { Text(Screen.Settings.title) },
+            icon = { Icon(Icons.Filled.Settings, null) },
+            selected = currentRoute == Screen.Settings.route,
+            onClick = { navController.navigate(Screen.Settings.route); closeDrawer() },
+            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+        )
+        NavigationDrawerItem(
             label = { Text(Screen.Tender.title) },
             icon = { Icon(Icons.Filled.Money, null) },
             selected = currentRoute == Screen.Tender.route,
             onClick = { navController.navigate(Screen.Tender.route); closeDrawer() },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
+
     }
 }
 
