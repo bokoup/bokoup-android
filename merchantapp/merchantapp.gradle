@@ -80,6 +80,7 @@ dependencies {
     implementation libs.clover
     implementation libs.clover.cfp
     implementation libs.coil.compose
+    implementation libs.kotlin.reflect
     implementation libs.material.icons.extended
     implementation libs.okhttp.logging
     implementation libs.zxing

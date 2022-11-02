@@ -20,7 +20,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.bokoup.merchantapp.model.CreatePromoArgs
+import com.bokoup.merchantapp.model.BasePromo
 import com.bokoup.merchantapp.model.PromoType
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -30,10 +30,8 @@ import com.google.accompanist.placeholder.material.shimmer
 @ExperimentalMaterial3Api
 fun CreatePromoCard(
     setCardState: (Boolean) -> Unit,
-    createPromo: (createPromoArgs: CreatePromoArgs) -> Unit,
+    createPromo: (promo: BasePromo, payer: String, groupSeed: String) -> Unit,
 ) {
-
-
     var name by remember {
         mutableStateOf(TextFieldValue())
     }
@@ -85,24 +83,18 @@ fun CreatePromoCard(
             pickedImageUri = it.data?.data
         }
 
-    var promoTypeMap by remember {
-        mutableStateOf(
-            PromoType.values().associateWith { false })
+    var promoTypes by remember {
+        mutableStateOf(PromoType::class.sealedSubclasses.map { it -> it.java.simpleName }
+            .associateWith { false })
     }
 
-    fun updateCheckedState(promoType: PromoType) {
-        promoTypeMap = promoTypeMap.entries.associate { entry ->
+    var selectedPromoType by remember { mutableStateOf("")}
 
-            val selected = if (entry.key != promoType) {
-                false
-            } else {
-                !entry.value
-            }
-
-//            var newEntry = entry.value
-//            newEntry = selected
-
-            entry.key to selected
+    fun updateCheckedState(promoType: String) {
+        selectedPromoType = if (promoType == selectedPromoType) {
+            ""
+        } else {
+            promoType
         }
     }
 
@@ -238,34 +230,69 @@ fun CreatePromoCard(
                                     PaddingValues(top = 18.dp)
                                 )
                             )
-                            promoTypeMap.entries.map { promoType ->
+                            PromoType::class.sealedSubclasses.map { it -> it.java.simpleName }.map { promoType ->
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     modifier = Modifier.padding(horizontal = 12.dp)
                                 ) {
-                                    Text(promoType.key.title, modifier = Modifier.weight(0.8f))
+                                    Text(promoType, modifier = Modifier.weight(0.8f))
                                     Checkbox(
-                                        checked = promoType.value,
-                                        onCheckedChange = { updateCheckedState(promoType.key) },
+                                        checked = promoType == selectedPromoType,
+                                        onCheckedChange = { updateCheckedState(promoType) },
                                         modifier = Modifier.weight(0.2f)
                                     )
                                 }
-                                if (promoType.value) {
-                                    promoType.key.attributes.map { attribute ->
-                                        val keyboardOptions = if (attribute.number) {
-                                            KeyboardOptions(keyboardType = KeyboardType.Number)
-                                        } else {
-                                            KeyboardOptions(keyboardType = KeyboardType.Ascii)
-                                        }
+
+                            }
+                            if (selectedPromoType.isNotBlank()) {
+                                when(selectedPromoType) {
+                                    "BuyXCurrencyGetYPercent" -> {
                                         TextField(
-                                            value = attribute.value,
-                                            onValueChange = { text -> attribute.value = text },
-                                            label = { Text(attribute.trait_type) },
+                                            value = buyXCurrency,
+                                            onValueChange = { text -> buyXCurrency = text },
+                                            label = { Text("buyXCurrency") },
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(vertical = 4.dp),
-                                            keyboardOptions = keyboardOptions
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                        )
+                                        TextField(
+                                            value = getYPercent,
+                                            onValueChange = { text -> buyXCurrency = text },
+                                            label = { Text("getYPercent") },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                        )
+                                    }
+                                    "BuyXProductGetYFree" -> {
+                                        TextField(
+                                            value = productId,
+                                            onValueChange = { text -> productId= text },
+                                            label = { Text("productId") },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp),
+                                        )
+                                        TextField(
+                                            value = buyXProduct,
+                                            onValueChange = { text -> buyXProduct = text },
+                                            label = { Text("buyXProduct") },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                        )
+                                        TextField(
+                                            value = getYProduct,
+                                            onValueChange = { text -> getYProduct = text },
+                                            label = { Text("getYProduct") },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp),
+                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                                         )
                                     }
                                 }
@@ -279,23 +306,45 @@ fun CreatePromoCard(
                         .padding(4.dp), horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        enabled = pickedImageUri != null && name.text.isNotBlank() && symbol.text.isNotBlank() && description.text.isNotBlank(),
+                        enabled = (pickedImageUri != null) && name.text.isNotBlank() && symbol.text.isNotBlank() && description.text.isNotBlank(),
                         onClick = {
-
-                            createPromo(
-                                CreatePromoArgs(
-                                    pickedImageUri!!,
-                                    name.text,
-                                    symbol.text,
-                                    description.text,
-                                    maxMint.text,
-                                    maxBurn.text,
-                                    "bokoup collection",
-                                    "bokoup family",
-                                    memo.text,
-                                    promoTypeMap.entries.first{ it -> it.value}.key
-                                )
-                            )
+                            val promo = when(selectedPromoType) {
+                                "BuyXCurrencyGetYPercent" -> {
+                                    PromoType.BuyXCurrencyGetYPercent(
+                                        uri = pickedImageUri!!,
+                                        name = name.text,
+                                        symbol = symbol.text,
+                                        description = description.text,
+                                        collectionName = "bokoup test store",
+                                        collectionFamily = "bokoup test",
+                                        maxMint = maxMint.text.toIntOrNull(),
+                                        maxBurn = maxBurn.text.toIntOrNull(),
+                                        memo = memo.text,
+                                        buyXCurrency = buyXCurrency.text.toInt(),
+                                        getYPercent = getYPercent.text.toInt()
+                                    )
+                                }
+                                "BuyXProductGetYFree" -> {
+                                    PromoType.BuyXProductGetYFree(
+                                        uri = pickedImageUri!!,
+                                        name = name.text,
+                                        symbol = symbol.text,
+                                        description = description.text,
+                                        collectionName = "bokoup test store",
+                                        collectionFamily = "bokoup test",
+                                        maxMint = maxMint.text.toIntOrNull(),
+                                        maxBurn = maxBurn.text.toIntOrNull(),
+                                        memo = memo.text,
+                                        productId = productId.text,
+                                        buyXProduct = buyXProduct.text.toInt(),
+                                        getYProduct = getYProduct.text.toInt()
+                                    )
+                                }
+                                else -> {
+                                    throw Exception("Selected promo type does not exist")
+                                }
+                            }
+                            createPromo(promo, "jing", "aling")
                             setCardState(false)
                         }) {
                         Text("Create Promo")
@@ -306,3 +355,4 @@ fun CreatePromoCard(
         }
     }
 }
+

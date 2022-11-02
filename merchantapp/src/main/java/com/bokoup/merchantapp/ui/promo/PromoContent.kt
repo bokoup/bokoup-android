@@ -215,7 +215,7 @@ fun PromoContent(
         }
         if (cardState) {
             CreatePromoCard(setCardState = setCardState,
-                createPromo = { viewModel.createPromo(it) })
+                createPromo = {promo, payer, groupSeed -> viewModel.createPromo(promo, payer, groupSeed)} )
         }
         if (mintCardState && qrCode != null) {
             QRCodeCard(

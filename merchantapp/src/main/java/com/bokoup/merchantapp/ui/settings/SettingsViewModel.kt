@@ -18,10 +18,17 @@ class SettingsViewModel @Inject constructor(
 
     val addressConsumer = ResourceFlowConsumer<String>(viewModelScope)
     val mnemonicConsumer = ResourceFlowConsumer<List<String>>(viewModelScope)
+    val groupSeedConsumer = ResourceFlowConsumer<String>(viewModelScope)
 
     fun saveMnemonic(mnemonic: List<String>) = viewModelScope.launch(dispatcher) {
         addressConsumer.collectFlow(
             settingsRepo.saveMnemonic(mnemonic)
+        )
+    }
+
+    fun saveGroupSeed(groupSeed: String) = viewModelScope.launch(dispatcher) {
+        groupSeedConsumer.collectFlow(
+            settingsRepo.saveGroupSeed(groupSeed)
         )
     }
 
@@ -34,6 +41,11 @@ class SettingsViewModel @Inject constructor(
     fun getMnemonic() = viewModelScope.launch(dispatcher) {
         mnemonicConsumer.collectFlow(
             settingsRepo.getMnemonic()
+        )
+    }
+    fun getGroupSeed() = viewModelScope.launch(dispatcher) {
+        groupSeedConsumer.collectFlow(
+            settingsRepo.getGroupSeed()
         )
     }
 }

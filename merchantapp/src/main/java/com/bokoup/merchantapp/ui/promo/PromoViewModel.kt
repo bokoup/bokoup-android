@@ -7,8 +7,9 @@ import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.lib.ResourceFlowConsumer
 import com.bokoup.lib.resourceFlowOf
 import com.bokoup.merchantapp.domain.DataRepo
+import com.bokoup.merchantapp.domain.SettingsRepo
 import com.bokoup.merchantapp.model.AppId
-import com.bokoup.merchantapp.model.CreatePromoArgs
+import com.bokoup.merchantapp.model.BasePromo
 import com.bokoup.merchantapp.model.CreatePromoResult
 import com.bokoup.merchantapp.model.PromoWithMetadata
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class PromoViewModel @Inject constructor(
     private val dataRepo: DataRepo,
     private val qrCodeGenerator: QRCodeGenerator,
+    private val settingsRepo: SettingsRepo
 ) : ViewModel() {
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
@@ -61,9 +63,9 @@ class PromoViewModel @Inject constructor(
             dataRepo.fetchPromos()
         )
     }
-    fun createPromo(createPromoArgs: CreatePromoArgs) = viewModelScope.launch(dispatcher) {
+    fun createPromo(promo: BasePromo, payer: String, groupSeed: String) = viewModelScope.launch(dispatcher) {
         createPromoConsumer.collectFlow(
-            dataRepo.createPromo(createPromoArgs)
+            dataRepo.createPromo(promo, payer, groupSeed)
         )
     }
 
@@ -71,10 +73,6 @@ class PromoViewModel @Inject constructor(
         appIdConsumer.collectFlow(
             dataRepo.fetchAppId()
         )
-    }
-
-    init {
-//        fetchPromos()
     }
 
 }

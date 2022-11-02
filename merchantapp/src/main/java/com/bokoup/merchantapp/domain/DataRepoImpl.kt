@@ -6,15 +6,16 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import com.bokoup.lib.resourceFlowOf
-import com.bokoup.merchantapp.model.CreatePromoArgs
+import com.bokoup.merchantapp.model.BasePromo
+import com.bokoup.merchantapp.model.PromoType
 import com.bokoup.merchantapp.model.PromoWithMetadata
 import com.bokoup.merchantapp.model.TokenAccountWithMetadata
 import com.bokoup.merchantapp.net.DataService
 import com.bokoup.merchantapp.net.OrderService
 import com.bokoup.merchantapp.net.TransactionService
+import com.bokoup.merchantapp.util.PromoTypeSerializer
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -26,7 +27,7 @@ class DataRepoImpl(
     val context: Context,
     private val dataService: DataService,
     private val transactionService: TransactionService,
-    private val orderService: OrderService
+    private val orderService: OrderService,
 ) : DataRepo {
     override fun fetchPromos() = resourceFlowOf {
         dataService.fetchPromos().map { p ->
@@ -86,54 +87,18 @@ class DataRepoImpl(
     override fun fetchAppId() =
         resourceFlowOf { transactionService.service.getAppId() }
 
-    override fun createPromo(createPromoArgs: CreatePromoArgs) = resourceFlowOf {
-
-        val (
-            uri, name, symbol, description, maxMint, maxBurn, collection, family, memo, promoType) = createPromoArgs
-
-        // metadata part
-        val metadata = JsonObject()
-        metadata.addProperty("name", name)
-        metadata.addProperty("symbol", symbol)
-        metadata.addProperty("description", description)
-
-
-        val attributes = JsonArray()
-        try {
-            val attribute = JsonObject()
-            attribute.addProperty("maxMint", maxMint.toInt())
-            attributes.add(attribute)
-        } catch (e: Exception) {
-            Unit
+    override fun createPromo(promo: BasePromo, payer: String, groupSeed: String) = resourceFlowOf {
+        val gson = GsonBuilder().apply {
+            registerTypeAdapter(PromoType::class.java, PromoTypeSerializer())
         }
+        val metadata = gson.create().toJson(promo)
 
-        try {
-            val attribute = JsonObject()
-            attribute.addProperty("maxBurn", maxBurn.toInt())
-            attributes.add(attribute)
-        } catch (e: Exception) {
-            Unit
-        }
-        if (attributes.size() > 0) {
-            metadata.add("attributes", attributes)
-        }
-
-        if (collection.isNotBlank() || family.isNotBlank()) {
-            val collectionObj = JsonObject()
-            if (collection.isNotBlank()) {
-                collectionObj.addProperty("name", collection)
-            }
-            if (family.isNotBlank()) {
-                collectionObj.addProperty("family", family)
-            }
-            metadata.add("collection", collectionObj)
-        }
         val metadataPart =
-            MultipartBody.Part.createFormData("metadata", metadata.toString())
+            MultipartBody.Part.createFormData("metadata", metadata)
 
-        val stream = context.contentResolver.openInputStream(uri)
-        val contentType = context.contentResolver.getType(uri) ?: "image/*"
-        val contentInfo = context.contentResolver.getFileName(uri)
+        val stream = context.contentResolver.openInputStream(promo.uri)
+        val contentType = context.contentResolver.getType(promo.uri) ?: "image/*"
+        val contentInfo = context.contentResolver.getFileName(promo.uri)
 
         val imagePart = MultipartBody.Part.createFormData(
             "image",
@@ -142,14 +107,8 @@ class DataRepoImpl(
                 .toRequestBody(contentType.toMediaType(), 0, contentInfo!!.second)
         )
 
-        // memo part
-        val memoPart = memo?.let {
-            MultipartBody.Part.createFormData("memo", it)
-        } ?: null
-
         val response =
-            transactionService.service.createPromo(metadataPart, imagePart, memoPart)
-        Log.d("jingus", response.toString())
+            transactionService.service.createPromo(metadataPart, imagePart, "payer", "groupSeed", promo.memo)
         response
     }
 }

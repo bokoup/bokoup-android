@@ -13,6 +13,11 @@ interface SettingsRepo {
     suspend fun saveMnemonic(mnemonic: List<String>) : Flow<Resource<String>>
 
     /**
+     * Saves group seed used to identify group to which merchant device belongs
+     */
+    suspend fun saveGroupSeed(groupSeed: String) : Flow<Resource<String>>
+
+    /**
      * Generates a mnemonic phrase of the specifed length.
      */
     suspend fun generateMnemonic(phraseLength: MnemonicPhraseLength = MnemonicPhraseLength.TWENTY_FOUR) : Flow<Resource<List<String>>>
@@ -21,6 +26,11 @@ interface SettingsRepo {
      * Returns a [com.dgsd.ksol.core.model.KeyPair] from mnemonic phrase stored in SharedPreferences.
      */
     suspend fun getMnemonic() : Flow<Resource<List<String>>>
+
+    /**
+     * Returns group seed stored in SharedPreferences.
+     */
+    suspend fun getGroupSeed() : Flow<Resource<String>>
 
     /**
      * Returns a [com.dgsd.ksol.core.model.KeyPair] from mnemonic phrase stored in SharedPreferences.

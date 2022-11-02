@@ -18,6 +18,14 @@ class SettingsRepoImpl(
         keypair.publicKey.toString()
     }
 
+    override suspend fun saveGroupSeed(groupSeed: String) = resourceFlowOf {
+        with(sharedPref.edit()) {
+            putString("groupSeed", groupSeed)
+            commit()
+        }
+        groupSeed
+    }
+
     override suspend fun generateMnemonic(phraseLength: MnemonicPhraseLength) =
         resourceFlowOf { keyFactory.createMnemonic(phraseLength)  }
 
@@ -33,5 +41,9 @@ class SettingsRepoImpl(
 
     override suspend fun getMnemonic() = resourceFlowOf {
         sharedPref.getStringSet("deviceKeyPair", emptySet())?.toList() ?: emptyList()
+    }
+
+    override suspend fun getGroupSeed() = resourceFlowOf {
+        sharedPref.getString("groupSeed", "") ?: ""
     }
 }

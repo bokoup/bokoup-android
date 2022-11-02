@@ -63,6 +63,7 @@ hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", ve
 koin-android = "io.insert-koin:koin-android:3.2.0"
 kotlin-coroutines-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin"}
 ksol-core = { module = "io.github.dlgrech:ksol-core", version.ref = "ksol" }
 ksol-keygen = { module = "io.github.dlgrech:ksol-keygen", version.ref = "ksol" }
 ksol-rpc = { module = "io.github.dlgrech:ksol-rpc", version.ref = "ksol" }

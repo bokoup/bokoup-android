@@ -16,5 +16,5 @@ interface DataRepo {
  fun fetchPromos(): Flow<Resource<List<PromoWithMetadata>>>
  fun fetchEligibleTokenAccounts(tokenOwner: String, promoOwner: String, orderId: String): Flow<Resource<List<TokenAccountWithMetadata>>>
  fun fetchAppId(): Flow<Resource<AppId>>
- fun createPromo(createPromoArgs: CreatePromoArgs): Flow<Resource<CreatePromoResult>>
+ fun createPromo(promo: BasePromo, payer: String, groupSeed: String): Flow<Resource<CreatePromoResult>>
 }

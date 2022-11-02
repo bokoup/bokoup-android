@@ -24,6 +24,7 @@ fun SettingsContent(
 ) {
     val pubKeyAddress by viewModel.addressConsumer.data.collectAsState(null)
     val mnemonic by viewModel.mnemonicConsumer.data.collectAsState(emptyList())
+    val groupSeed by viewModel.groupSeedConsumer.data.collectAsState(null)
 
     var showPassPhrase by remember { mutableStateOf(false) }
 
@@ -32,6 +33,10 @@ fun SettingsContent(
             "lecture gorilla snap perfect sunny meadow panda mosquito agent turn harsh join"
         viewModel.saveMnemonic(mnemonicString.split(" "))
         viewModel.getMnemonic()
+
+        val groupSeed = "FqVhBMr1T6pLCr4Ka5LNJNpSag8tgoK6fgx5bxfipySJ"
+        viewModel.saveGroupSeed(groupSeed)
+        viewModel.getGroupSeed()
     }
 
     Row(
@@ -80,6 +85,20 @@ fun SettingsContent(
                         )
                         Spacer(modifier = Modifier.weight(0.1f))
                     }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Group:",
+                        modifier = Modifier.weight(0.2f),
+                    )
+                    Text(
+                        text = groupSeed.toString(),
+                        modifier = Modifier.weight(0.7f),
+                    )
+                    Spacer(modifier = Modifier.weight(0.1f))
                 }
             }
         }
