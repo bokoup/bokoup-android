@@ -259,7 +259,7 @@ fun CreatePromoCard(
                                         )
                                         TextField(
                                             value = getYPercent,
-                                            onValueChange = { text -> buyXCurrency = text },
+                                            onValueChange = { text -> getYPercent = text },
                                             label = { Text("getYPercent") },
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -344,7 +344,7 @@ fun CreatePromoCard(
                                     throw Exception("Selected promo type does not exist")
                                 }
                             }
-                            createPromo(promo, "jing", "aling")
+                            createPromo(promo, "_payer", "_gropSeed")
                             setCardState(false)
                         }) {
                         Text("Create Promo")

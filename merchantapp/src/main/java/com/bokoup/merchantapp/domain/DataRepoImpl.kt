@@ -91,7 +91,9 @@ class DataRepoImpl(
         val gson = GsonBuilder().apply {
             registerTypeAdapter(PromoType::class.java, PromoTypeSerializer())
         }
-        val metadata = gson.create().toJson(promo)
+
+        val metadata = gson.create().toJson(promo, PromoType::class.java)
+        Log.d("createPromo", metadata)
 
         val metadataPart =
             MultipartBody.Part.createFormData("metadata", metadata)
@@ -108,7 +110,7 @@ class DataRepoImpl(
         )
 
         val response =
-            transactionService.service.createPromo(metadataPart, imagePart, "payer", "groupSeed", promo.memo)
+            transactionService.service.createPromo(metadataPart, imagePart, payer, groupSeed, promo.memo)
         response
     }
 }

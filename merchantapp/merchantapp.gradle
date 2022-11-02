@@ -59,6 +59,11 @@ android {
         }
     }
     namespace 'com.bokoup.merchantapp'
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -87,6 +92,7 @@ dependencies {
     implementation projects.lib
     kapt libs.bundles.kapt
     testImplementation libs.android.junit
+    testImplementation libs.roboelectric
 }
 
 apollo {

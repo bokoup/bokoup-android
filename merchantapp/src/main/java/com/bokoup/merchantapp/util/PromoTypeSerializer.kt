@@ -12,40 +12,39 @@ class PromoTypeSerializer : JsonSerializer<PromoType> {
         context: JsonSerializationContext?
     ): JsonElement {
         val metadata = JsonObject()
-        val attributes = JsonArray()
         when (src) {
             is BasePromo -> {
                 metadata.addProperty("name", src.name)
                 metadata.addProperty("symbol", src.symbol)
                 metadata.addProperty("description", src.description)
-                metadata.add("attributes", attributes)
-
-                val metadataAttributes = metadata.get("attributes").asJsonArray
-                metadataAttributes.addAttribute(
+                
+                val attributes = JsonArray()
+                
+                attributes.addAttribute(
                     "promoType",
-                    src.javaClass.name.replaceFirstChar { it.lowercase() })
+                    src.javaClass.simpleName.replaceFirstChar { it.lowercase() })
 
                 when (src) {
                     is PromoType.BuyXCurrencyGetYPercent -> {
-                        metadataAttributes.addAttribute(
+                        attributes.addAttribute(
                             "buyXCurrency",
                             src.buyXCurrency
                         )
-                        metadataAttributes.addAttribute(
+                        attributes.addAttribute(
                             "getYPercent",
                             src.getYPercent
                         )
                     }
                     is PromoType.BuyXProductGetYFree -> {
-                        metadataAttributes.addAttribute(
+                        attributes.addAttribute(
                             "productId",
                             src.productId
                         )
-                        metadataAttributes.addAttribute(
+                        attributes.addAttribute(
                             "buyXProduct",
                             src.buyXProduct
                         )
-                        metadataAttributes.addAttribute(
+                        attributes.addAttribute(
                             "getYProduct",
                             src.getYProduct
                         )
@@ -53,11 +52,14 @@ class PromoTypeSerializer : JsonSerializer<PromoType> {
                 }
 
                 if (src.maxMint != null) {
-                    metadataAttributes.addAttribute("maxMint", src.maxMint!!)
+                    attributes.addAttribute("maxMint", src.maxMint!!)
                 }
                 if (src.maxBurn != null) {
-                    metadataAttributes.addAttribute("maxBurn", src.maxBurn!!)
+                    attributes.addAttribute("maxBurn", src.maxBurn!!)
                 }
+                
+                metadata.add("attributes", attributes)
+
                 if (src.collectionName.isNotBlank() || src.collectionFamily.isNotBlank()) {
                     val collectionObj = JsonObject()
                     if (src.collectionName.isNotBlank()) {

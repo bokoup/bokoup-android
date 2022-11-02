@@ -12,6 +12,7 @@ import com.bokoup.merchantapp.model.AppId
 import com.bokoup.merchantapp.model.BasePromo
 import com.bokoup.merchantapp.model.CreatePromoResult
 import com.bokoup.merchantapp.model.PromoWithMetadata
+import com.dgsd.ksol.core.model.KeyPair
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +35,8 @@ class PromoViewModel @Inject constructor(
     val promosConsumer = ResourceFlowConsumer<List<PromoWithMetadata>>(viewModelScope)
     val appIdConsumer = ResourceFlowConsumer<AppId>(viewModelScope)
     val createPromoConsumer = ResourceFlowConsumer<CreatePromoResult>(viewModelScope)
+    val groupSeedConsumer = ResourceFlowConsumer<String>(viewModelScope)
+    val keyPairConsumer = ResourceFlowConsumer<KeyPair?>(viewModelScope)
 
     val errorConsumer = merge(
         promosConsumer.error,
@@ -50,7 +53,14 @@ class PromoViewModel @Inject constructor(
     fun getQrCode(mintString: String, message: String) = viewModelScope.launch(Dispatchers.IO) {
         qrCodeConsumer.collectFlow(
             resourceFlowOf {
-                val url = URL("http://99.91.8.130:8080/promo/mint/$mintString/${URLEncoder.encode(message, "utf-8")}")
+                val url = URL(
+                    "http://99.91.8.130:8080/promo/mint/$mintString/${
+                        URLEncoder.encode(
+                            message,
+                            "utf-8"
+                        )
+                    }"
+                )
                 val content = "solana:$url"
                 qrCodeGenerator.generateQR(content)
             }
@@ -58,16 +68,29 @@ class PromoViewModel @Inject constructor(
 
     }
 
+    fun getGroupSeed() = viewModelScope.launch(dispatcher) {
+        groupSeedConsumer.collectFlow(
+            settingsRepo.getGroupSeed()
+        )
+    }
+
+    fun getKeyPair() = viewModelScope.launch(dispatcher) {
+        keyPairConsumer.collectFlow(
+            settingsRepo.getKeyPair()
+        )
+    }
     fun fetchPromos() = viewModelScope.launch(dispatcher) {
         promosConsumer.collectFlow(
             dataRepo.fetchPromos()
         )
     }
-    fun createPromo(promo: BasePromo, payer: String, groupSeed: String) = viewModelScope.launch(dispatcher) {
-        createPromoConsumer.collectFlow(
-            dataRepo.createPromo(promo, payer, groupSeed)
-        )
-    }
+
+    fun createPromo(promo: BasePromo, payer: String, groupSeed: String) =
+        viewModelScope.launch(dispatcher) {
+            createPromoConsumer.collectFlow(
+                dataRepo.createPromo(promo, payer, groupSeed)
+            )
+        }
 
     fun fetchAppId() = viewModelScope.launch(dispatcher) {
         appIdConsumer.collectFlow(

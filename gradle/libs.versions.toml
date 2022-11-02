@@ -75,6 +75,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit-converter = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 shimmer-android = "com.facebook.shimmer:shimmer:0.5.0"
 zxing = "com.google.zxing:core:3.5.0"
+roboelectric = "org.robolectric:robolectric:4.8"
 
 #lottie = "com.airbnb.android:lottie:5.2.0"
 #http://airbnb.io/lottie/#/android-compose

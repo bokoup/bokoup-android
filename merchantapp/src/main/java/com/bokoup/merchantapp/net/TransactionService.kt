@@ -29,7 +29,7 @@ public interface PromoService {
 
     @Multipart
     @Streaming
-    @POST("promo/create/{payer}/{group_seed}/{memo}")
+    @POST("promo/create/{payer}/{groupSeed}/{memo}")
     suspend fun createPromo(
         @Part metadata: MultipartBody.Part,
         @Part image: MultipartBody.Part,

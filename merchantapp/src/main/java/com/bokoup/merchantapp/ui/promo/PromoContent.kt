@@ -39,9 +39,16 @@ fun PromoContent(
     val uriHandler = LocalUriHandler.current
     val promoSubscription by viewModel.promoSubscription.collectAsState(null)
     val qrCode by viewModel.qrCodeConsumer.data.collectAsState()
+    val groupSeed by viewModel.groupSeedConsumer.data.collectAsState()
+    val keyPair by viewModel.keyPairConsumer.data.collectAsState()
 
     val (mintCardState, setMintCardState) = remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getGroupSeed()
+        viewModel.getKeyPair()
     }
 
     LaunchedEffect(error) {
@@ -213,9 +220,9 @@ fun PromoContent(
             }
 
         }
-        if (cardState) {
+        if (cardState && keyPair != null && groupSeed != null) {
             CreatePromoCard(setCardState = setCardState,
-                createPromo = {promo, payer, groupSeed -> viewModel.createPromo(promo, payer, groupSeed)} )
+                createPromo = {promo, _, _ -> viewModel.createPromo(promo, keyPair!!.publicKey.toString(), groupSeed!!)} )
         }
         if (mintCardState && qrCode != null) {
             QRCodeCard(
