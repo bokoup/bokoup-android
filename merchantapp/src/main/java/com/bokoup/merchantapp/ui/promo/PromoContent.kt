@@ -41,9 +41,21 @@ fun PromoContent(
     val qrCode by viewModel.qrCodeConsumer.data.collectAsState()
     val groupSeed by viewModel.groupSeedConsumer.data.collectAsState()
     val keyPair by viewModel.keyPairConsumer.data.collectAsState()
+    val createdPromoResult by viewModel.createPromoConsumer.data.collectAsState()
+    val signature by viewModel.signatureConsumer.data.collectAsState()
 
     val (mintCardState, setMintCardState) = remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(createdPromoResult) {
+        if (createdPromoResult != null && keyPair != null) {
+            viewModel.signAndSend(createdPromoResult!!.transaction, keyPair!!)
+        }
+    }
+
+    LaunchedEffect(signature) {
+        Log.d("PromoContent", signature.toString())
     }
 
     LaunchedEffect(Unit) {
@@ -222,7 +234,7 @@ fun PromoContent(
         }
         if (cardState && keyPair != null && groupSeed != null) {
             CreatePromoCard(setCardState = setCardState,
-                createPromo = {promo, _, _ -> viewModel.createPromo(promo, keyPair!!.publicKey.toString(), groupSeed!!)} )
+                createPromo = {promo, uri, memo, _, _ -> viewModel.createPromo(promo, uri, memo, keyPair!!.publicKey.toString(), groupSeed!!)} )
         }
         if (mintCardState && qrCode != null) {
             QRCodeCard(

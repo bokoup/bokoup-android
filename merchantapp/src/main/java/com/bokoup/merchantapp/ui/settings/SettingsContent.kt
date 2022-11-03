@@ -1,17 +1,14 @@
 package com.bokoup.merchantapp.ui.settings
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
@@ -23,16 +20,12 @@ fun SettingsContent(
     padding: PaddingValues,
 ) {
     val pubKeyAddress by viewModel.addressConsumer.data.collectAsState(null)
-    val mnemonic by viewModel.mnemonicConsumer.data.collectAsState(emptyList())
     val groupSeed by viewModel.groupSeedConsumer.data.collectAsState(null)
 
-    var showPassPhrase by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
-        val mnemonicString =
-            "lecture gorilla snap perfect sunny meadow panda mosquito agent turn harsh join"
-        viewModel.saveMnemonic(mnemonicString.split(" "))
-        viewModel.getMnemonic()
+        val bytesString =
+            "168,126,25,63,142,86,163,8,155,171,196,77,52,125,37,59,241,58,198,10,151,83,43,91,248,207,36,69,64,243,47,156,30,161,142,168,81,205,247,3,3,41,165,243,48,141,203,61,201,254,10,176,50,111,191,58,228,29,202,4,34,210,44,106"
+        viewModel.saveKeyPairString(bytesString)
 
         val groupSeed = "FqVhBMr1T6pLCr4Ka5LNJNpSag8tgoK6fgx5bxfipySJ"
         viewModel.saveGroupSeed(groupSeed)
@@ -52,46 +45,20 @@ fun SettingsContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Address:",
+                        "Pubkey:",
                         modifier = Modifier.weight(0.2f),
                     )
                     Text(
                         text = pubKeyAddress.toString(),
-                        modifier = Modifier.weight(0.7f),
+                        modifier = Modifier.weight(0.8f),
                     )
-                    IconButton(
-                        onClick = { showPassPhrase = !showPassPhrase },
-                        enabled = pubKeyAddress != null,
-                        modifier = Modifier.weight(0.1f),
-                    ) {
-                        if (showPassPhrase) {
-                            Icon(Icons.Filled.VisibilityOff, null)
-                        } else {
-                            Icon(Icons.Filled.Visibility, null)
-                        }
-                    }
-                }
-                if (pubKeyAddress != null && showPassPhrase) {
-                    Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(
-                            "Pass Phrase:",
-                            modifier = Modifier.weight(0.2f),
-                        )
-                        Text(
-                            mnemonic?.joinToString(" ") ?: "",
-                            softWrap = true,
-                            modifier = Modifier.weight(0.7f),
-                            textAlign = TextAlign.Left
-                        )
-                        Spacer(modifier = Modifier.weight(0.1f))
-                    }
                 }
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Group:",
+                        "Group Seed:",
                         modifier = Modifier.weight(0.2f),
                     )
                     Text(

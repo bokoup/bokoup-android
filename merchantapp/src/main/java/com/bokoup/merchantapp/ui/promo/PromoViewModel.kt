@@ -1,16 +1,17 @@
 package com.bokoup.merchantapp.ui.promo
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bokoup.lib.QRCodeGenerator
 import com.bokoup.lib.ResourceFlowConsumer
 import com.bokoup.lib.resourceFlowOf
-import com.bokoup.merchantapp.domain.DataRepo
+import com.bokoup.merchantapp.domain.PromoRepo
 import com.bokoup.merchantapp.domain.SettingsRepo
 import com.bokoup.merchantapp.model.AppId
-import com.bokoup.merchantapp.model.BasePromo
 import com.bokoup.merchantapp.model.CreatePromoResult
+import com.bokoup.merchantapp.model.PromoType
 import com.bokoup.merchantapp.model.PromoWithMetadata
 import com.dgsd.ksol.core.model.KeyPair
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,19 +25,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PromoViewModel @Inject constructor(
-    private val dataRepo: DataRepo,
+    private val promoRepo: PromoRepo,
     private val qrCodeGenerator: QRCodeGenerator,
     private val settingsRepo: SettingsRepo
 ) : ViewModel() {
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    val promoSubscription = dataRepo.promoSubscriptionFlow
+    val promoSubscription = promoRepo.promoSubscriptionFlow
 
     val promosConsumer = ResourceFlowConsumer<List<PromoWithMetadata>>(viewModelScope)
     val appIdConsumer = ResourceFlowConsumer<AppId>(viewModelScope)
     val createPromoConsumer = ResourceFlowConsumer<CreatePromoResult>(viewModelScope)
     val groupSeedConsumer = ResourceFlowConsumer<String>(viewModelScope)
     val keyPairConsumer = ResourceFlowConsumer<KeyPair?>(viewModelScope)
+    val signatureConsumer = ResourceFlowConsumer<String>(viewModelScope)
 
     val errorConsumer = merge(
         promosConsumer.error,
@@ -76,25 +78,32 @@ class PromoViewModel @Inject constructor(
 
     fun getKeyPair() = viewModelScope.launch(dispatcher) {
         keyPairConsumer.collectFlow(
-            settingsRepo.getKeyPair()
+            settingsRepo.getKeyPairFlow()
         )
     }
     fun fetchPromos() = viewModelScope.launch(dispatcher) {
         promosConsumer.collectFlow(
-            dataRepo.fetchPromos()
+            promoRepo.fetchPromos()
         )
     }
 
-    fun createPromo(promo: BasePromo, payer: String, groupSeed: String) =
+    fun createPromo(promo: PromoType, uri: Uri, memo: String?, payer: String, groupSeed: String) =
         viewModelScope.launch(dispatcher) {
             createPromoConsumer.collectFlow(
-                dataRepo.createPromo(promo, payer, groupSeed)
+                promoRepo.createPromo(promo, uri, memo, payer, groupSeed)
+            )
+        }
+
+    fun signAndSend(transaction: String, keyPair: KeyPair) =
+        viewModelScope.launch(dispatcher) {
+            signatureConsumer.collectFlow(
+                promoRepo.signAndSend(transaction, keyPair)
             )
         }
 
     fun fetchAppId() = viewModelScope.launch(dispatcher) {
         appIdConsumer.collectFlow(
-            dataRepo.fetchAppId()
+            promoRepo.fetchAppId()
         )
     }
 

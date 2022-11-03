@@ -20,7 +20,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.bokoup.merchantapp.model.BasePromo
 import com.bokoup.merchantapp.model.PromoType
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -30,50 +29,50 @@ import com.google.accompanist.placeholder.material.shimmer
 @ExperimentalMaterial3Api
 fun CreatePromoCard(
     setCardState: (Boolean) -> Unit,
-    createPromo: (promo: BasePromo, payer: String, groupSeed: String) -> Unit,
+    createPromo: (promo: PromoType, uri: Uri, memo: String?, payer: String, groupSeed: String) -> Unit,
 ) {
     var name by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("name"))
     }
 
     var symbol by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("symbol"))
     }
 
     var description by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("description"))
     }
 
     var maxMint by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("10"))
     }
 
     var maxBurn by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("5"))
     }
 
     var buyXCurrency by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("100"))
     }
 
     var getYPercent by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("10"))
     }
 
     var productId by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("productId"))
     }
 
     var buyXProduct by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("3"))
     }
 
     var getYProduct by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("1"))
     }
 
     var memo by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue("memo"))
     }
 
     var pickedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -88,7 +87,7 @@ fun CreatePromoCard(
             .associateWith { false })
     }
 
-    var selectedPromoType by remember { mutableStateOf("")}
+    var selectedPromoType by remember { mutableStateOf("") }
 
     fun updateCheckedState(promoType: String) {
         selectedPromoType = if (promoType == selectedPromoType) {
@@ -124,8 +123,7 @@ fun CreatePromoCard(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     IconButton(
-                        onClick = { setCardState(false) },
-                        modifier = Modifier.padding(0.dp)
+                        onClick = { setCardState(false) }, modifier = Modifier.padding(0.dp)
                     ) {
                         Icon(
                             Icons.Filled.Close,
@@ -144,18 +142,15 @@ fun CreatePromoCard(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Button(
-                                onClick = {
-                                    val intent = Intent(
-                                        Intent.ACTION_OPEN_DOCUMENT,
-                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                                    )
-                                        .apply {
-                                            addCategory(Intent.CATEGORY_OPENABLE)
-                                        }
-                                    launcher.launch(intent)
-                                }
-                            ) {
+                            Button(onClick = {
+                                val intent = Intent(
+                                    Intent.ACTION_OPEN_DOCUMENT,
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                                ).apply {
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                    }
+                                launcher.launch(intent)
+                            }) {
                                 Text("Select Image")
                             }
                             AsyncImage(
@@ -170,24 +165,21 @@ fun CreatePromoCard(
                             )
 
                         }
-                        TextField(
-                            value = name,
+                        TextField(value = name,
                             onValueChange = { text -> name = text },
                             label = { Text("Name") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
                         )
-                        TextField(
-                            value = symbol,
+                        TextField(value = symbol,
                             onValueChange = { text -> symbol = text },
                             label = { Text("Symbol") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
                         )
-                        TextField(
-                            value = description,
+                        TextField(value = description,
                             onValueChange = { text -> description = text },
                             label = { Text("Description") },
                             maxLines = 3,
@@ -196,8 +188,7 @@ fun CreatePromoCard(
                                 .height(120.dp)
                                 .padding(vertical = 4.dp)
                         )
-                        TextField(
-                            value = memo,
+                        TextField(value = memo,
                             onValueChange = { text -> memo = text },
                             label = { Text("Memo") },
                             modifier = Modifier
@@ -206,8 +197,7 @@ fun CreatePromoCard(
                         )
                     }
                     Column(modifier = Modifier.weight(0.5f)) {
-                        TextField(
-                            value = maxMint,
+                        TextField(value = maxMint,
                             onValueChange = { text -> maxMint = text },
                             label = { Text("Max issue") },
                             modifier = Modifier
@@ -215,8 +205,7 @@ fun CreatePromoCard(
                                 .padding(vertical = 4.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
-                        TextField(
-                            value = maxBurn,
+                        TextField(value = maxBurn,
                             onValueChange = { text -> maxBurn = text },
                             label = { Text("Max redeem") },
                             modifier = Modifier
@@ -230,23 +219,24 @@ fun CreatePromoCard(
                                     PaddingValues(top = 18.dp)
                                 )
                             )
-                            PromoType::class.sealedSubclasses.map { it -> it.java.simpleName }.map { promoType ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier.padding(horizontal = 12.dp)
-                                ) {
-                                    Text(promoType, modifier = Modifier.weight(0.8f))
-                                    Checkbox(
-                                        checked = promoType == selectedPromoType,
-                                        onCheckedChange = { updateCheckedState(promoType) },
-                                        modifier = Modifier.weight(0.2f)
-                                    )
-                                }
+                            PromoType::class.sealedSubclasses.map { it -> it.java.simpleName }
+                                .map { promoType ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.padding(horizontal = 12.dp)
+                                    ) {
+                                        Text(promoType, modifier = Modifier.weight(0.8f))
+                                        Checkbox(
+                                            checked = promoType == selectedPromoType,
+                                            onCheckedChange = { updateCheckedState(promoType) },
+                                            modifier = Modifier.weight(0.2f)
+                                        )
+                                    }
 
-                            }
+                                }
                             if (selectedPromoType.isNotBlank()) {
-                                when(selectedPromoType) {
+                                when (selectedPromoType) {
                                     "BuyXCurrencyGetYPercent" -> {
                                         TextField(
                                             value = buyXCurrency,
@@ -270,7 +260,7 @@ fun CreatePromoCard(
                                     "BuyXProductGetYFree" -> {
                                         TextField(
                                             value = productId,
-                                            onValueChange = { text -> productId= text },
+                                            onValueChange = { text -> productId = text },
                                             label = { Text("productId") },
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -303,15 +293,14 @@ fun CreatePromoCard(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(4.dp), horizontalArrangement = Arrangement.Center
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(
-                        enabled = (pickedImageUri != null) && name.text.isNotBlank() && symbol.text.isNotBlank() && description.text.isNotBlank(),
+                    Button(enabled = (pickedImageUri != null) && name.text.isNotBlank() && symbol.text.isNotBlank() && description.text.isNotBlank(),
                         onClick = {
-                            val promo = when(selectedPromoType) {
+                            val promo = when (selectedPromoType) {
                                 "BuyXCurrencyGetYPercent" -> {
                                     PromoType.BuyXCurrencyGetYPercent(
-                                        uri = pickedImageUri!!,
                                         name = name.text,
                                         symbol = symbol.text,
                                         description = description.text,
@@ -319,14 +308,12 @@ fun CreatePromoCard(
                                         collectionFamily = "bokoup test",
                                         maxMint = maxMint.text.toIntOrNull(),
                                         maxBurn = maxBurn.text.toIntOrNull(),
-                                        memo = memo.text,
                                         buyXCurrency = buyXCurrency.text.toInt(),
                                         getYPercent = getYPercent.text.toInt()
                                     )
                                 }
                                 "BuyXProductGetYFree" -> {
                                     PromoType.BuyXProductGetYFree(
-                                        uri = pickedImageUri!!,
                                         name = name.text,
                                         symbol = symbol.text,
                                         description = description.text,
@@ -334,7 +321,6 @@ fun CreatePromoCard(
                                         collectionFamily = "bokoup test",
                                         maxMint = maxMint.text.toIntOrNull(),
                                         maxBurn = maxBurn.text.toIntOrNull(),
-                                        memo = memo.text,
                                         productId = productId.text,
                                         buyXProduct = buyXProduct.text.toInt(),
                                         getYProduct = getYProduct.text.toInt()
@@ -344,7 +330,7 @@ fun CreatePromoCard(
                                     throw Exception("Selected promo type does not exist")
                                 }
                             }
-                            createPromo(promo, "_payer", "_gropSeed")
+                            createPromo(promo, pickedImageUri!!, memo.text, "_payer", "_gropSeed")
                             setCardState(false)
                         }) {
                         Text("Create Promo")

@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bokoup.lib.ResourceFlowConsumer
-import com.bokoup.merchantapp.domain.DataRepo
+import com.bokoup.merchantapp.domain.PromoRepo
 import com.bokoup.merchantapp.model.CustomerPayload
 import com.bokoup.merchantapp.model.TokenAccountWithMetadata
 import com.clover.cfp.connector.*
@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MerchantViewModel @Inject constructor(
-    private val dataRepo: DataRepo,
+    private val promoRepo: PromoRepo,
     private val remoteDeviceConnector: RemoteDeviceConnector,
     private val barCodeReceiver: BarCodeReceiver,
     private val barcodeScanner: BarcodeScanner
@@ -36,7 +36,7 @@ class MerchantViewModel @Inject constructor(
 
     fun fetchEligibleTokenAccounts(tokenOwner: String, promoOwner: String, orderId: String) = viewModelScope.launch(Dispatchers.IO) {
         tokenAccountConsumer.collectFlow(
-            dataRepo.fetchEligibleTokenAccounts(tokenOwner, promoOwner, orderId)
+            promoRepo.fetchEligibleTokenAccounts(tokenOwner, promoOwner, orderId)
         )
     }
 

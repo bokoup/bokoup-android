@@ -6,34 +6,13 @@ import com.dgsd.ksol.keygen.MnemonicPhraseLength
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepo {
-    /**
-     * Saves a [com.dgsd.ksol.core.model.KeyPair] created from a mnemonic to SharedPreferences
-     * storage and returns the PublicKey address as a [String].
-     */
-    suspend fun saveMnemonic(mnemonic: List<String>) : Flow<Resource<String>>
+    suspend fun saveKeyPairString(keyPairString: String): Flow<Resource<String>>
+    suspend fun saveGroupSeed(groupSeed: String): Flow<Resource<String>>
 
-    /**
-     * Saves group seed used to identify group to which merchant device belongs
-     */
-    suspend fun saveGroupSeed(groupSeed: String) : Flow<Resource<String>>
+    suspend fun generateMnemonic(phraseLength: MnemonicPhraseLength = MnemonicPhraseLength.TWENTY_FOUR): Flow<Resource<List<String>>>
 
-    /**
-     * Generates a mnemonic phrase of the specifed length.
-     */
-    suspend fun generateMnemonic(phraseLength: MnemonicPhraseLength = MnemonicPhraseLength.TWENTY_FOUR) : Flow<Resource<List<String>>>
+    suspend fun getGroupSeed(): Flow<Resource<String>>
 
-    /**
-     * Returns a [com.dgsd.ksol.core.model.KeyPair] from mnemonic phrase stored in SharedPreferences.
-     */
-    suspend fun getMnemonic() : Flow<Resource<List<String>>>
-
-    /**
-     * Returns group seed stored in SharedPreferences.
-     */
-    suspend fun getGroupSeed() : Flow<Resource<String>>
-
-    /**
-     * Returns a [com.dgsd.ksol.core.model.KeyPair] from mnemonic phrase stored in SharedPreferences.
-     */
-    suspend fun getKeyPair() : Flow<Resource<KeyPair?>>
+    suspend fun getKeyPairfromBytesString(bytesString: String) : KeyPair
+    suspend fun getKeyPairFlow(): Flow<Resource<KeyPair?>>
 }

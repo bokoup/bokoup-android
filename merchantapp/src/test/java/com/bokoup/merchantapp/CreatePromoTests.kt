@@ -1,8 +1,8 @@
 package com.bokoup.merchantapp
 
-import android.net.Uri
 import android.util.Log
 import com.bokoup.merchantapp.model.PromoType
+import com.bokoup.merchantapp.model.toJson
 import com.bokoup.merchantapp.util.PromoTypeSerializer
 import com.bokoup.merchantapp.util.addAttribute
 import com.google.gson.GsonBuilder
@@ -13,17 +13,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 @RunWith(RobolectricTestRunner::class)
 class CreatePromoTests {
     @Test
     fun promo_buyXCurrencyGetYPercents_serializes_correctly() {
         val promo = PromoType.BuyXCurrencyGetYPercent(
-            uri = Uri.parse("test"),
             name = "name",
             symbol = "symbol",
             description = "description",
@@ -31,7 +25,7 @@ class CreatePromoTests {
             collectionFamily = "collectionFamily",
             maxMint = 10,
             maxBurn = 5,
-            memo = "memo",
+
             buyXCurrency = 100,
             getYPercent = 10
         )
@@ -40,7 +34,7 @@ class CreatePromoTests {
             registerTypeAdapter(PromoType::class.java, PromoTypeSerializer())
         }.create()
 
-        val metadataJson = gson.toJson(promo, PromoType::class.java)
+        val metadataJson = promo.toJson()
         Log.d("CreatePromoTests", metadataJson)
 
         val metadata = JsonParser().parse(metadataJson).asJsonObject
@@ -69,7 +63,6 @@ class CreatePromoTests {
     @Test
     fun promo_buyXProductGetYFree_serializes_correctly() {
         val promo = PromoType.BuyXProductGetYFree(
-            uri = Uri.parse("test"),
             name = "name",
             symbol = "symbol",
             description = "description",
@@ -77,7 +70,6 @@ class CreatePromoTests {
             collectionFamily = "collectionFamily",
             maxMint = 10,
             maxBurn = 5,
-            memo = "memo",
             productId = "productId",
             buyXProduct = 10,
             getYProduct = 1

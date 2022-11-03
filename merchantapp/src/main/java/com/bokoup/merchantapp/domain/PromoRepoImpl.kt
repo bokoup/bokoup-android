@@ -6,16 +6,17 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import com.bokoup.lib.resourceFlowOf
-import com.bokoup.merchantapp.model.BasePromo
 import com.bokoup.merchantapp.model.PromoType
 import com.bokoup.merchantapp.model.PromoWithMetadata
 import com.bokoup.merchantapp.model.TokenAccountWithMetadata
+import com.bokoup.merchantapp.model.toJson
 import com.bokoup.merchantapp.net.DataService
 import com.bokoup.merchantapp.net.OrderService
 import com.bokoup.merchantapp.net.TransactionService
-import com.bokoup.merchantapp.util.PromoTypeSerializer
+import com.dgsd.ksol.SolanaApi
+import com.dgsd.ksol.core.LocalTransactions
+import com.dgsd.ksol.core.model.KeyPair
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -23,12 +24,14 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class DataRepoImpl(
+class PromoRepoImpl(
     val context: Context,
     private val dataService: DataService,
     private val transactionService: TransactionService,
     private val orderService: OrderService,
-) : DataRepo {
+    private val solanaApi: SolanaApi,
+    private val localTransactions: LocalTransactions,
+) : PromoRepo {
     override fun fetchPromos() = resourceFlowOf {
         dataService.fetchPromos().map { p ->
             val attributesMap =
@@ -87,20 +90,16 @@ class DataRepoImpl(
     override fun fetchAppId() =
         resourceFlowOf { transactionService.service.getAppId() }
 
-    override fun createPromo(promo: BasePromo, payer: String, groupSeed: String) = resourceFlowOf {
-        val gson = GsonBuilder().apply {
-            registerTypeAdapter(PromoType::class.java, PromoTypeSerializer())
-        }
-
-        val metadata = gson.create().toJson(promo, PromoType::class.java)
+    override fun createPromo(promo: PromoType, uri: Uri, memo: String?, payer: String, groupSeed: String) = resourceFlowOf {
+        val metadata = promo.toJson()
         Log.d("createPromo", metadata)
 
         val metadataPart =
             MultipartBody.Part.createFormData("metadata", metadata)
 
-        val stream = context.contentResolver.openInputStream(promo.uri)
-        val contentType = context.contentResolver.getType(promo.uri) ?: "image/*"
-        val contentInfo = context.contentResolver.getFileName(promo.uri)
+        val stream = context.contentResolver.openInputStream(uri)
+        val contentType = context.contentResolver.getType(uri) ?: "image/*"
+        val contentInfo = context.contentResolver.getFileName(uri)
 
         val imagePart = MultipartBody.Part.createFormData(
             "image",
@@ -110,8 +109,13 @@ class DataRepoImpl(
         )
 
         val response =
-            transactionService.service.createPromo(metadataPart, imagePart, payer, groupSeed, promo.memo)
+            transactionService.service.createPromo(metadataPart, imagePart, payer, groupSeed, memo)
         response
+    }
+
+    override fun signAndSend(transaction: String, keyPair: KeyPair) = resourceFlowOf {
+        val localTransaction = localTransactions.deserializeTransaction(transaction)
+        solanaApi.sendTransaction(localTransactions.sign(localTransaction, keyPair))
     }
 }
 

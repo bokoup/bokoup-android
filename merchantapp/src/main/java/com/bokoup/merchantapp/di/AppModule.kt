@@ -100,7 +100,7 @@ class AppModule {
 
     @Provides
     fun solanaApi(
-    ) = SolanaApi(Cluster.DEVNET, OkHttpClient.Builder().apply {
+    ) = SolanaApi(Cluster.Custom("http://99.91.8.130:8899", "ws://99.91.8.130:8899"), OkHttpClient.Builder().apply {
         addInterceptor(interceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })
@@ -137,17 +137,21 @@ class AppModule {
     ) = OrderService(connector)
 
     @Provides
-    fun dataRepo(
+    fun promoRepo(
         @ApplicationContext
         context: Context,
         dataService: DataService,
         transactionService: TransactionService,
-        orderService: OrderService
-    ): DataRepo = DataRepoImpl(
+        orderService: OrderService,
+        solanaApi: SolanaApi,
+        localTransactions: LocalTransactions
+    ): PromoRepo = PromoRepoImpl(
         context,
         dataService,
         transactionService,
-        orderService
+        orderService,
+        solanaApi,
+        localTransactions
     )
 
     @Provides
@@ -182,7 +186,7 @@ class AppModule {
     fun settingsRepo(
         keyFactory: KeyFactory,
         sharedPref: SharedPreferences
-    ) : SettingsRepo = SettingsRepoImpl(
+    ): SettingsRepo = SettingsRepoImpl(
         keyFactory,
         sharedPref
     )
@@ -191,6 +195,7 @@ class AppModule {
     fun sharedPref(
         @ApplicationContext
         context: Context
-    ) : SharedPreferences = context.getSharedPreferences("com.bokoup.merchantapp.SETTINGS", Context.MODE_PRIVATE)
+    ): SharedPreferences =
+        context.getSharedPreferences("com.bokoup.merchantapp.SETTINGS", Context.MODE_PRIVATE)
 
 }
