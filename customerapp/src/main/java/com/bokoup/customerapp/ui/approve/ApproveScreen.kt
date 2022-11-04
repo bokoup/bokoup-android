@@ -1,6 +1,7 @@
 package com.bokoup.customerapp.ui.approve
 
 
+import android.util.Log
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
@@ -26,10 +27,7 @@ fun ApproveScreen(
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit,
     channel: Channel<String>,
-    action: String?,
-    mintString: String?,
-    message: String?,
-    memo: String?,
+    url: String?,
     navigateToTokens: () -> Unit
 ) {
 
@@ -47,11 +45,11 @@ fun ApproveScreen(
     }
 
     LaunchedEffect(key1 = keyPair) {
-        if (keyPair != null && action != null && mintString != null && message != null) {
-            viewModel.getAppId(action, mintString, message, memo)
-            viewModel.getTokenTransaction(
-                action, mintString, message,
-                keyPair!!.publicKey.toString(), memo
+        if (keyPair != null && url != null) {
+            Log.d("url", url)
+            viewModel.getAppId(url)
+            viewModel.getTokenTransaction(url,
+                keyPair!!.publicKey.toString()
             )
         }
     }

@@ -13,14 +13,20 @@ fun CustomerScreen(
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit = {},
     customerPayload: CustomerPayload,
-    sendMessage: (String)-> Unit
+    sendMessage: (String) -> Unit
 ) {
     AppScreen(
         snackbarHostState = snackbarHostState,
         openDrawer = openDrawer,
         screen = Screen.Customer,
         content = {
-            CustomerContent(padding = it, orderId = customerPayload.orderId, tokenAccounts = customerPayload.tokenAccounts, sendMessage = sendMessage)
+            CustomerContent(
+                padding = it,
+                orderId = customerPayload.orderId,
+                tokenAccounts = customerPayload.tokenAccounts,
+                delegateString = customerPayload.delegateString,
+                sendMessage = sendMessage
+            )
         }
     )
 

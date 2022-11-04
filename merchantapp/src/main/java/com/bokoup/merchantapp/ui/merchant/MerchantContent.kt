@@ -1,6 +1,7 @@
 package com.bokoup.merchantapp.ui.merchant
 
 import android.app.Activity
+import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.util.Log
 import androidx.compose.foundation.layout.*
@@ -25,35 +26,41 @@ fun MerchantContent(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     orderId: String,
-    promoOwner: String
 ) {
     val barcodeResult by viewModel.barcodeResult.collectAsState()
     val tokenAccounts by viewModel.tokenAccountConsumer.data.collectAsState()
     val activity = LocalContext.current as Activity
     val customActivityResponse by viewModel.customerActivityResult
 
+    LaunchedEffect(Unit) {
+        viewModel.startBarcodeScanner()
+    }
+
     LaunchedEffect(customActivityResponse) {
         Log.d("MerchantContent", customActivityResponse?.result.toString())
-        if (customActivityResponse?.result == RESULT_OK) {
-            viewModel.approve(activity)
+        when(customActivityResponse?.result) {
+            RESULT_OK -> viewModel.approve(activity)
+            RESULT_CANCELED -> viewModel.approve(activity)
         }
     }
 
     LaunchedEffect(barcodeResult) {
         if (barcodeResult != null) {
-            viewModel.fetchEligibleTokenAccounts(barcodeResult!!, promoOwner, orderId)
+            viewModel.fetchEligibleTokenAccounts(barcodeResult!!, orderId)
         }
     }
 
     LaunchedEffect(tokenAccounts) {
-        if (tokenAccounts != null && barcodeResult != null) {
+        if (tokenAccounts != null && barcodeResult != null && orderId != null) {
             viewModel.stopBarcodeScanner()
             viewModel.startCustomActivity(orderId, tokenAccounts!!, barcodeResult!!)
         }
     }
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(padding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -76,10 +83,6 @@ fun MerchantContent(
         }
         Spacer(Modifier.height(16.dp))
         Text("barcodeResult: $barcodeResult")
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = { viewModel.startBarcodeScanner() }) {
-            Text("start scanner", style = MaterialTheme.typography.headlineMedium)
-        }
         Spacer(Modifier.height(16.dp))
         Button(onClick = { viewModel.stopBarcodeScanner() }) {
             Text("end scanner", style = MaterialTheme.typography.headlineMedium)

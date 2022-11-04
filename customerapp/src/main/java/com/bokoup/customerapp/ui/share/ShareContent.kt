@@ -15,15 +15,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 @ExperimentalMaterial3Api
 fun ShareContent(
     viewModel: ShareViewModel = hiltViewModel(),
     padding: PaddingValues,
+    navigateToScan: () -> Unit
 ) {
     LaunchedEffect(viewModel.qrCodeConsumer) {
         viewModel.getQrCode()
+    }
+
+    LaunchedEffect(Unit) {
+        delay(5000)
+        navigateToScan()
     }
 
     val qrCode: Pair<String, Bitmap>? by viewModel.qrCodeConsumer.data.collectAsState()

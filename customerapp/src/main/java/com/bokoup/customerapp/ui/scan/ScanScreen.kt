@@ -14,7 +14,7 @@ import com.bokoup.customerapp.ui.common.AppScreen
 fun ScanScreen(
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit,
-    navigateToApprove: (String, String, String, String?) -> Unit
+    navigateToApprove: (String) -> Unit
 ) {
     AppScreen(
         snackbarHostState = snackbarHostState,

@@ -2,7 +2,7 @@ package com.bokoup.merchantapp
 
 import android.util.Log
 import com.bokoup.merchantapp.model.PromoType
-import com.bokoup.merchantapp.model.toJson
+import com.bokoup.merchantapp.model.asJson
 import com.bokoup.merchantapp.util.PromoTypeSerializer
 import com.bokoup.merchantapp.util.addAttribute
 import com.google.gson.GsonBuilder
@@ -34,7 +34,7 @@ class CreatePromoTests {
             registerTypeAdapter(PromoType::class.java, PromoTypeSerializer())
         }.create()
 
-        val metadataJson = promo.toJson()
+        val metadataJson = promo.asJson
         Log.d("CreatePromoTests", metadataJson)
 
         val metadata = JsonParser().parse(metadataJson).asJsonObject
@@ -79,8 +79,7 @@ class CreatePromoTests {
             registerTypeAdapter(PromoType::class.java, PromoTypeSerializer())
         }.create()
 
-        val metadataJson = gson.toJson(promo, PromoType::class.java)
-        Log.d("CreatePromoTests", metadataJson)
+        val metadataJson = promo.asJson
 
         val metadata = JsonParser().parse(metadataJson).asJsonObject
 

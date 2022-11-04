@@ -1,0 +1,10 @@
+query DelegatedTokenQuery($orderId: String, $delegate: String) {
+    delegatePromoToken(where: {memo: {_cast: {String: {_regex: $orderId}}}, delegate: {_eq: $delegate}}, limit: 1, orderBy: {createdAt: DESC}) {
+        signature
+        tokenAccount
+        tokenAccountObject {
+            delegatedAmount
+            delegate
+        }
+    }
+}

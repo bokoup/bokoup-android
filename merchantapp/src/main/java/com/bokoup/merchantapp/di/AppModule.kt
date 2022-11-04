@@ -144,14 +144,16 @@ class AppModule {
         transactionService: TransactionService,
         orderService: OrderService,
         solanaApi: SolanaApi,
-        localTransactions: LocalTransactions
+        localTransactions: LocalTransactions,
+        sharedPref: SharedPreferences
     ): PromoRepo = PromoRepoImpl(
         context,
         dataService,
         transactionService,
         orderService,
         solanaApi,
-        localTransactions
+        localTransactions,
+        sharedPref
     )
 
     @Provides

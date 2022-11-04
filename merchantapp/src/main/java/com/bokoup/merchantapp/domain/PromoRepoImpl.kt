@@ -2,14 +2,12 @@ package com.bokoup.merchantapp.domain
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import com.bokoup.lib.resourceFlowOf
-import com.bokoup.merchantapp.model.PromoType
-import com.bokoup.merchantapp.model.PromoWithMetadata
-import com.bokoup.merchantapp.model.TokenAccountWithMetadata
-import com.bokoup.merchantapp.model.toJson
+import com.bokoup.merchantapp.model.*
 import com.bokoup.merchantapp.net.DataService
 import com.bokoup.merchantapp.net.OrderService
 import com.bokoup.merchantapp.net.TransactionService
@@ -31,6 +29,7 @@ class PromoRepoImpl(
     private val orderService: OrderService,
     private val solanaApi: SolanaApi,
     private val localTransactions: LocalTransactions,
+    private val sharedPref: SharedPreferences
 ) : PromoRepo {
     override fun fetchPromos() = resourceFlowOf {
         dataService.fetchPromos().map { p ->
@@ -49,12 +48,15 @@ class PromoRepoImpl(
 
     override fun fetchEligibleTokenAccounts(
         tokenOwner: String,
-        promoOwner: String,
         orderId: String
     ) =
         resourceFlowOf {
+            val publicKeyString = sharedPref.getString(SharedPrefKeys.PublicKeyString.key, "")
+            val key = SharedPrefKeys.PublicKeyString.key
+            checkNotNull(publicKeyString) {"$key does not exist"}
+
             val order = orderService.getOrder(orderId)
-            val tokenAccounts = dataService.fetchTokenAccounts(tokenOwner, promoOwner).map { t ->
+            val tokenAccounts = dataService.fetchTokenAccounts(tokenOwner, publicKeyString).map { t ->
                 val attributesMap =
                     JsonParser().parse(Gson().toJson(t.mintObject?.promoObject?.metadataObject?.attributes)).asJsonArray.associate { a ->
                         a.asJsonObject["trait_type"].asString to a.asJsonObject["value"].asString
@@ -67,6 +69,7 @@ class PromoRepoImpl(
                     attributes = attributesMap
                 )
             }
+            Log.d("TokenAccounts", tokenOwner)
             Log.d("TokenAccounts", tokenAccounts.toString())
 
             val eligibleBuyXCurrencyPromos = tokenAccounts.filter {
@@ -91,7 +94,7 @@ class PromoRepoImpl(
         resourceFlowOf { transactionService.service.getAppId() }
 
     override fun createPromo(promo: PromoType, uri: Uri, memo: String?, payer: String, groupSeed: String) = resourceFlowOf {
-        val metadata = promo.toJson()
+        val metadata = promo.asJson
         Log.d("createPromo", metadata)
 
         val metadataPart =

@@ -13,6 +13,10 @@ interface SettingsRepo {
 
     suspend fun getGroupSeed(): Flow<Resource<String>>
 
-    suspend fun getKeyPairfromBytesString(bytesString: String) : KeyPair
+    suspend fun getKeyPairfromString(bytesString: String) : KeyPair
+
+    suspend fun getPublicKeyString() : String?
+    suspend fun getKeyPairString() : String?
+    suspend fun getKeyPair() : KeyPair?
     suspend fun getKeyPairFlow(): Flow<Resource<KeyPair?>>
 }

@@ -23,12 +23,7 @@ class CustomerActivity : ComponentActivity(), CloverCFPCommsHelper.MessageListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
-//        val bundle = intent.extras
-//        if (bundle != null) {
-//            for (key in bundle.keySet()) {
-//                Log.e("jingus", key + " : " + if (bundle[key] != null) bundle[key] else "NULL")
-//            }
-//        }
+
         activityHelper = CloverCFPActivityHelper(this)
         commsHelper = CloverCFPCommsHelper(this, intent, this);
 

@@ -69,7 +69,7 @@ class AppModule() {
 
     @Provides
     fun tokenApi(
-    ) = TokenApi()
+    ) = TransactionService()
 
     @Provides
     fun solanaApi(
@@ -86,10 +86,10 @@ class AppModule() {
     @Provides
     fun tokenRepo(
         tokenDao: TokenDao,
-        tokenApi: TokenApi,
+        transactionService: TransactionService,
     ): TokenRepo = TokenRepoImpl(
         tokenDao = tokenDao,
-        tokenApi = tokenApi,
+        transactionService = transactionService,
     )
 
     @Provides

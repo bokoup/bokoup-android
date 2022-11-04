@@ -7,10 +7,7 @@ sealed interface ScanResult {
     val barcode: Barcode
 
     data class BokoupUrl(
-        val action: String,
-        val mintString: String,
-        val message: String,
-        val memo: String?,
+        val url: String,
         override val barcode: Barcode
     ): ScanResult
 

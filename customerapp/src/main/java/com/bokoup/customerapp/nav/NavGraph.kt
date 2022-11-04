@@ -42,7 +42,7 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
     }
 
     NavHost(
-        navController = navController, startDestination = Screen.Wallet.name
+        navController = navController, startDestination = Screen.Share.name
     ) {
         composable(
             route = Screen.Tokens.name
@@ -59,7 +59,10 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
         composable(
             route = Screen.Share.name
         ) {
-            ShareScreen(openDrawer = openDrawer, snackbarHostState = snackbarHostState)
+            ShareScreen(
+                openDrawer = openDrawer,
+                snackbarHostState = snackbarHostState,
+                navigateToScan = { navController.navigate(Screen.Scan.name) })
         }
         composable(
             route = Screen.Scan.name
@@ -67,31 +70,23 @@ fun NavGraph(navController: NavHostController, openDrawer: () -> Unit) {
             val route =
                 ScanScreen(openDrawer = openDrawer,
                     snackbarHostState = snackbarHostState,
-                    navigateToApprove = { action, mintString, message, memo ->
+                    navigateToApprove = { url ->
                         navController.navigate(
-                            "" +
-                                    "${Screen.Approve.name}?action=${action}?mintString=${mintString}?message=${message}?memo=${memo}"
+                            "${Screen.Approve.name}?url=${url}"
                         )
                     })
         }
         composable(
-            route = "${Screen.Approve.name}?action={action}?mintString={mintString}?message={message}?memo={memo}",
+            route = "${Screen.Approve.name}?url={url}",
             arguments = listOf(
-                navArgument("action") { type = NavType.StringType; nullable = true },
-                navArgument("mintString") { type = NavType.StringType; nullable = true },
-                navArgument("message") { type = NavType.StringType; nullable = true },
-                navArgument("memo") {
-                    type = androidx.navigation.NavType.StringType; nullable = true
-                }),
+                navArgument("url") { type = NavType.StringType; nullable = true },
+            ),
         ) {
             ApproveScreen(
                 openDrawer = openDrawer,
                 snackbarHostState = snackbarHostState,
                 channel = channel,
-                action = it.arguments?.getString("action"),
-                mintString = it.arguments?.getString("mintString"),
-                message = it.arguments?.getString("message"),
-                memo = it.arguments?.getString("memo"),
+                url = it.arguments?.getString("url"),
                 navigateToTokens = { navController.navigate(Screen.Tokens.name) }
             )
         }

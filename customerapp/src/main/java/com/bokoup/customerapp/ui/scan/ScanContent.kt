@@ -39,7 +39,7 @@ fun ScanContent(
     viewModel: ScanViewModel = hiltViewModel(),
     padding: PaddingValues,
     boxColor: Color = Color.Green,
-    navigateToApprove: (String, String, String, String?) -> Unit
+    navigateToApprove: (String) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -81,7 +81,7 @@ fun ScanContent(
         if (scanResult != null) {
             if (scanResult is ScanResult.BokoupUrl) {
                 val scanResult = scanResult as ScanResult.BokoupUrl
-                navigateToApprove(scanResult.action, scanResult.mintString, scanResult.message, scanResult.memo)
+                navigateToApprove(scanResult.url)
             }
         }
 

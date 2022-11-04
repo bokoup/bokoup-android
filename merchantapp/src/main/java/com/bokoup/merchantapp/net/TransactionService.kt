@@ -1,7 +1,7 @@
 package com.bokoup.merchantapp.net
 
 import com.bokoup.merchantapp.model.AppId
-import com.bokoup.merchantapp.model.CreatePromoResult
+import com.bokoup.merchantapp.model.TxApiResponse
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -36,17 +36,15 @@ public interface PromoService {
         @Path("payer") payer: String,
         @Path("groupSeed") groupSeed: String,
         @Path("memo") memo: String?
-    ): CreatePromoResult
+    ): TxApiResponse
 
-    @POST("promo/{action}/{mintString}/{message}/{memo}")
-    suspend fun post(
+    @POST("promo/burn-delegated/{tokenAccount}/{message}/{memo}")
+    suspend fun burnDelegated(
         @Body accountData: AccountData,
-        @Path("action") action: String,
-        @Path("mintString") mintString: String,
+        @Path("tokenAccount") tokenAccount: String,
         @Path("message") message: String,
         @Path("memo") memo: String?
-    ): TokenApiResponse
+    ): TxApiResponse
 }
-data class TokenApiResponse(val transaction: String, val message: String)
 data class AccountData(val account: String)
 

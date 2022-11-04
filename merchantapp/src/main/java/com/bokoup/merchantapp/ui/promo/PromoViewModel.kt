@@ -10,7 +10,7 @@ import com.bokoup.lib.resourceFlowOf
 import com.bokoup.merchantapp.domain.PromoRepo
 import com.bokoup.merchantapp.domain.SettingsRepo
 import com.bokoup.merchantapp.model.AppId
-import com.bokoup.merchantapp.model.CreatePromoResult
+import com.bokoup.merchantapp.model.TxApiResponse
 import com.bokoup.merchantapp.model.PromoType
 import com.bokoup.merchantapp.model.PromoWithMetadata
 import com.dgsd.ksol.core.model.KeyPair
@@ -35,7 +35,7 @@ class PromoViewModel @Inject constructor(
 
     val promosConsumer = ResourceFlowConsumer<List<PromoWithMetadata>>(viewModelScope)
     val appIdConsumer = ResourceFlowConsumer<AppId>(viewModelScope)
-    val createPromoConsumer = ResourceFlowConsumer<CreatePromoResult>(viewModelScope)
+    val createPromoConsumer = ResourceFlowConsumer<TxApiResponse>(viewModelScope)
     val groupSeedConsumer = ResourceFlowConsumer<String>(viewModelScope)
     val keyPairConsumer = ResourceFlowConsumer<KeyPair?>(viewModelScope)
     val signatureConsumer = ResourceFlowConsumer<String>(viewModelScope)

@@ -2,6 +2,8 @@ package com.bokoup.merchantapp.domain
 
 import android.content.SharedPreferences
 import com.bokoup.lib.resourceFlowOf
+import com.bokoup.merchantapp.model.SharedPrefKeys
+import com.bokoup.merchantapp.model.key
 import com.dgsd.ksol.core.model.KeyPair
 import com.dgsd.ksol.core.model.PrivateKey
 import com.dgsd.ksol.keygen.KeyFactory
@@ -19,9 +21,11 @@ class SettingsRepoImpl(
         val privateKey = PrivateKey.fromByteArray(bytesList.toByteArray())
 
         val keyPair = KeyFactory.createKeyPairFromPrivateKey(privateKey)
+        val publicKeyString = keyPair.publicKey.toBase58String()
 
         with(sharedPref.edit()) {
-            putString("deviceKeyPair", keyPairString)
+            putString(SharedPrefKeys.KeyPairString.key, keyPairString)
+            putString(SharedPrefKeys.PublicKeyString.key, publicKeyString)
             commit()
         }
         keyPair.publicKey.toBase58String()
@@ -29,7 +33,7 @@ class SettingsRepoImpl(
 
     override suspend fun saveGroupSeed(groupSeed: String) = resourceFlowOf {
         with(sharedPref.edit()) {
-            putString("groupSeed", groupSeed)
+            putString(SharedPrefKeys.GroupSeed.key, groupSeed)
             commit()
         }
         groupSeed
@@ -38,7 +42,7 @@ class SettingsRepoImpl(
     override suspend fun generateMnemonic(phraseLength: MnemonicPhraseLength) =
         resourceFlowOf { keyFactory.createMnemonic(phraseLength)  }
 
-    override suspend fun getKeyPairfromBytesString(bytesString: String) : KeyPair {
+    override suspend fun getKeyPairfromString(bytesString: String) : KeyPair {
         val bytesList = bytesString.split(",").map {
             it.toInt()
         }
@@ -51,18 +55,29 @@ class SettingsRepoImpl(
         return KeyFactory.createKeyPairFromPrivateKey(privateKey)
     }
 
+    override suspend fun getPublicKeyString() : String? {
+        return sharedPref.getString(SharedPrefKeys.PublicKeyString.key, "")
+    }
+
+    override suspend fun getKeyPairString() : String? {
+        return sharedPref.getString(SharedPrefKeys.KeyPairString.key, "")
+    }
+
+    override suspend fun getKeyPair() : KeyPair? {
+        val keyPairString = getKeyPairString()
+        return if (keyPairString == null) {
+            null
+        } else {
+            getKeyPairfromString(keyPairString)
+        }
+    }
 
     override suspend fun getKeyPairFlow() =
         resourceFlowOf {
-            val bytesString = sharedPref.getString("deviceKeyPair", "")
-            if (bytesString != null) {
-                getKeyPairfromBytesString(bytesString)
-            } else {
-                null
-            }
+            getKeyPair()
         }
 
     override suspend fun getGroupSeed() = resourceFlowOf {
-        sharedPref.getString("groupSeed", "") ?: ""
+        sharedPref.getString(SharedPrefKeys.GroupSeed.key, "") ?: ""
     }
 }

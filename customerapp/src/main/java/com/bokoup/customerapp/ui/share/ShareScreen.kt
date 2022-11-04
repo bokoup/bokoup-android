@@ -11,13 +11,14 @@ import com.bokoup.customerapp.ui.common.AppScreen
 fun ShareScreen(
     snackbarHostState: SnackbarHostState,
     openDrawer: () -> Unit,
+    navigateToScan: () -> Unit
 ) {
     AppScreen(
         snackbarHostState = snackbarHostState,
         openDrawer = openDrawer,
         screen = Screen.Share,
         content = {
-            ShareContent(padding = it)
+            ShareContent(padding = it, navigateToScan = navigateToScan)
         }
     )
 

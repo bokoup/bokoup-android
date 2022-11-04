@@ -1,6 +1,7 @@
 package com.bokoup.merchantapp.ui.merchant
 
 import android.app.Activity
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -10,7 +11,9 @@ import androidx.lifecycle.viewModelScope
 import com.bokoup.lib.ResourceFlowConsumer
 import com.bokoup.merchantapp.domain.PromoRepo
 import com.bokoup.merchantapp.model.CustomerPayload
+import com.bokoup.merchantapp.model.SharedPrefKeys
 import com.bokoup.merchantapp.model.TokenAccountWithMetadata
+import com.bokoup.merchantapp.model.key
 import com.clover.cfp.connector.*
 import com.clover.sdk.v1.Intents
 import com.clover.sdk.v3.scanner.BarcodeScanner
@@ -26,7 +29,8 @@ class MerchantViewModel @Inject constructor(
     private val promoRepo: PromoRepo,
     private val remoteDeviceConnector: RemoteDeviceConnector,
     private val barCodeReceiver: BarCodeReceiver,
-    private val barcodeScanner: BarcodeScanner
+    private val barcodeScanner: BarcodeScanner,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     var car = CustomActivityRequest("com.bokoup.CUSTOMER_FACING_ACTIVITY", "{\"msg\"=\"Initial...\"}")
     private val _barcodeResult = barCodeReceiver.barcodeString
@@ -34,15 +38,17 @@ class MerchantViewModel @Inject constructor(
     val tokenAccountConsumer = ResourceFlowConsumer<List<TokenAccountWithMetadata>>(viewModelScope)
     val customerActivityResult: MutableState<CustomActivityResponse?> = mutableStateOf(null)
 
-    fun fetchEligibleTokenAccounts(tokenOwner: String, promoOwner: String, orderId: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun fetchEligibleTokenAccounts(tokenOwner: String, orderId: String) = viewModelScope.launch(Dispatchers.IO) {
         tokenAccountConsumer.collectFlow(
-            promoRepo.fetchEligibleTokenAccounts(tokenOwner, promoOwner, orderId)
+            promoRepo.fetchEligibleTokenAccounts(tokenOwner, orderId)
         )
     }
 
     fun startCustomActivity(orderId: String, tokenAccounts: List<TokenAccountWithMetadata>, tokenOwner: String) = viewModelScope.launch(Dispatchers.IO) {
+        val delegateString = sharedPreferences.getString(SharedPrefKeys.PublicKeyString.key, "")
+        checkNotNull(delegateString) {"PublicKeyString not set"}
         remoteDeviceConnector.resetDevice(ResetDeviceRequest())
-        car.payload = Gson().toJson(CustomerPayload(orderId, tokenAccounts, tokenOwner))
+        car.payload = Gson().toJson(CustomerPayload(orderId, tokenAccounts, tokenOwner, delegateString))
         remoteDeviceConnector.startCustomActivity(car, CustomerActivityListener(customerActivityResult))
     }
 

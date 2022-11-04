@@ -1,6 +1,6 @@
 package com.bokoup.customerapp.data.repo
 
-import com.bokoup.customerapp.data.net.TokenApi
+import com.bokoup.customerapp.data.net.TransactionService
 import com.bokoup.customerapp.data.net.TokenApiId
 import com.bokoup.customerapp.data.net.TokenApiResponse
 import com.bokoup.customerapp.data.net.TokenDao
@@ -11,23 +11,17 @@ import kotlinx.coroutines.flow.Flow
 
 class TokenRepoImpl(
     private val tokenDao: TokenDao,
-    private val tokenApi: TokenApi,
+    private val transactionService: TransactionService,
 ) : TokenRepo {
     override fun getTokensFromRoom() = tokenDao.getTokens()
     override fun getApiId(
-        action: String,
-        mintString: String,
-        promoName: String,
-        memo: String?
+        url: String,
     ): Flow<Resource<TokenApiId>> =
-        resourceFlowOf { tokenApi.getApiId(action, mintString, promoName, memo) }
+        resourceFlowOf { transactionService.getApiId(url) }
 
     override fun getTokenTransaction(
-        action: String,
-        mintString: String,
-        message: String,
-        memo: String?,
+        url: String,
         address: String
     ): Flow<Resource<TokenApiResponse>> =
-        resourceFlowOf { tokenApi.getTokenTransaction(action, mintString, message, memo, address) }
+        resourceFlowOf { transactionService.getTokenTransaction(url, address) }
 }

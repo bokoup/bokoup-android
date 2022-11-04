@@ -40,10 +40,13 @@ sealed interface PromoType {
     ) : PromoType, BasePromo
 }
 
-fun PromoType.toJson(): String {
-    val gson = GsonBuilder().apply {
-        registerTypeAdapter(PromoType::class.java, PromoTypeSerializer())
-    }.create()
-    return gson.toJson(this, PromoType::class.java)
-}
+
+val PromoType.asJson: String
+    get() {
+        val gson = GsonBuilder().apply {
+            registerTypeAdapter(PromoType::class.java, PromoTypeSerializer())
+        }.create()
+        return gson.toJson(this, PromoType::class.java)
+    }
+
 

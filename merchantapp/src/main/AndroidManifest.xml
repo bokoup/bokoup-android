@@ -33,6 +33,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <receiver
+            android:name=".ui.PaymentBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.clover.intent.action.PAYMENT_PROCESSED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".ui.CustomerActivity"
             android:exported="true"
@@ -57,20 +66,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-<!--        <receiver-->
-<!--            android:name=".ui.MyBroadcastReceiver"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.clover.BarcodeBroadcast" />-->
-<!--                <action android:name="android.nfc.action.TAG_DISCOVERED" />-->
-<!--                <action android:name="android.nfc.action.NDEF_DISCOVERED" />-->
-<!--                <action android:name="com.clover.sdk.app.intent.action.APP_NOTIFICATION" />-->
-
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
     </application>
 
 </manifest>

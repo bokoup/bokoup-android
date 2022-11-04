@@ -33,6 +33,7 @@ fun CustomerContent(
     padding: PaddingValues,
     orderId: String,
     tokenAccounts: List<TokenAccountWithMetadata>,
+    delegateString: String,
     sendMessage: (String) -> Unit
 ) {
     val activity = (LocalContext.current as? Activity)
@@ -43,19 +44,21 @@ fun CustomerContent(
 
     var tokenAccountsMap by remember { mutableStateOf(tokenAccounts.associateBy { tokenAccount -> tokenAccount.tokenAccount.id }) }
 
-
     LaunchedEffect(delegateTokenSubscription?.data?.delegatePromoToken) {
+
         val trans = try {
             delegateTokenSubscription?.data?.delegatePromoToken?.first()
         } catch (_: Exception) {
             null
         }
+        Log.d("trans", trans.toString())
         if (trans != null) {
             val memoJson = Gson().toJson(trans.memo)
             val memo = Gson().fromJson(memoJson, DelegateMemo::class.java)
             val tokenAccount = tokenAccountsMap[trans.tokenAccountObject?.id]
             if (memo.orderId == orderId && memo.timestamp == timestamp.value && tokenAccount != null) {
                 val discount = Discount()
+                Log.d("discount", discount.toString())
                 discount.name = tokenAccount.name
                 discount.percentage = tokenAccount.attributes["getYPercent"]?.toLong()
                 viewModel.addDiscount(orderId, discount)
@@ -63,6 +66,7 @@ fun CustomerContent(
         }
     }
 
+    // order gets returned when discount is applied
     LaunchedEffect(order) {
         if (order != null) {
             Log.d("CustomerContent", order.toString())
@@ -161,7 +165,7 @@ fun CustomerContent(
                 Button(onClick = {
                     timestamp.value = (System.currentTimeMillis() / 1000).toInt()
                     viewModel.getQrCode(
-                        orderId, tokenAccountsMap.values.first { it.selected }, timestamp.value!!
+                        orderId, tokenAccountsMap.values.first { it.selected }, delegateString, timestamp.value!!
                     )
                 }, enabled = tokenAccountsMap.values.any { it.selected }) {
                     Text("Accept", style = MaterialTheme.typography.headlineMedium)

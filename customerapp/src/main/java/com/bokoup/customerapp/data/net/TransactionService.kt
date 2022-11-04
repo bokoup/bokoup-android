@@ -1,6 +1,5 @@
 package com.bokoup.customerapp.data.net
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -10,9 +9,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.Url
 
-class TokenApi {
+class TransactionService {
 
     private val interceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -28,51 +27,32 @@ class TokenApi {
     private val tokenService = retrofit.create(TokenService::class.java)
 
     suspend fun getApiId(
-        action: String,
-        mintString: String,
-        message: String,
-        memo: String?,
+        url: String,
     ): TokenApiId =
         withContext(Dispatchers.Default) {
-            val result = tokenService.get(action, mintString, message, memo)
+            val result = tokenService.get(url)
             result
         }
 
     suspend fun getTokenTransaction(
-        action: String,
-        mintString: String,
-        message: String,
-        memo: String?,
+        url: String,
         account: String
     ): TokenApiResponse = withContext(Dispatchers.Default) {
         val accountData = AccountData(account = account)
-        var result = TokenApiResponse(transaction = "j", message = "k")
-        try {
-            result = tokenService.post(accountData, action, mintString, message, memo)
-        } catch (e: Throwable) {
-            Log.d("jingus", e.toString())
-
-        }
-        result
+         tokenService.post(url, accountData)
     }
 }
 
 interface TokenService {
-    @GET("promo/{action}/{mintString}/{message}/{memo}")
+    @GET
     suspend fun get(
-        @Path("action") action: String,
-        @Path("mintString") mintString: String,
-        @Path("message") message: String,
-        @Path("memo") memo: String?
+        @Url url: String,
     ): TokenApiId
 
-    @POST("promo/{action}/{mintString}/{message}/{memo}")
+    @POST
     suspend fun post(
+        @Url url: String,
         @Body accountData: AccountData,
-        @Path("action") action: String,
-        @Path("mintString") mintString: String,
-        @Path("message") message: String,
-        @Path("memo") memo: String?
     ): TokenApiResponse
 }
 

@@ -1,5 +1,5 @@
-query TokenAccountListQuery($tokenOwner: String, $promoOwner: String) {
-  tokenAccount(where: {owner: {_eq: $tokenOwner}, mintObject: {promoObject: {owner: {_eq: $promoOwner}}}}) {
+query TokenAccountListQuery($tokenOwner: String, $groupMember: jsonb) {
+  tokenAccount(where: {owner: {_eq: $tokenOwner}, mintObject: {promoObject: {groupObject: {members: {_contains: $groupMember}}}}}) {
     id
     owner
     amount

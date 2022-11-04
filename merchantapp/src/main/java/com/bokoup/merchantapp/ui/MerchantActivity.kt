@@ -1,6 +1,7 @@
 package com.bokoup.merchantapp.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,19 +19,13 @@ class MerchantActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
-//        val bundle = intent.extras
-//        if (bundle != null) {
-//            for (key in bundle.keySet()) {
-//                Log.e("jingus", key + " : " + if (bundle[key] != null) bundle[key] else "NULL")
-//            }
-//        }
         val orderId = intent.getStringExtra(Intents.EXTRA_ORDER_ID) ?: ""
+        Log.d("orderId", orderId)
         setContent {
             AppTheme{
                 MerchantScreen(
                     snackbarHostState = SnackbarHostState(),
                     orderId = orderId,
-                    promoOwner = "34a7Z6VXoLoVGpd9ES311yFJfTUuyh9JN35Czc9REz3j"
                 )
             }
         }

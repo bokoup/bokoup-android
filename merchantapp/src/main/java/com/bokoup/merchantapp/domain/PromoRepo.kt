@@ -16,8 +16,8 @@ interface PromoRepo {
  val promoSubscriptionFlow: Flow<ApolloResponse<PromoListSubscription.Data>>
  val delegateTokenSubscription: Flow<ApolloResponse<DelegateTokenSubscription.Data>>
  fun fetchPromos(): Flow<Resource<List<PromoWithMetadata>>>
- fun fetchEligibleTokenAccounts(tokenOwner: String, promoOwner: String, orderId: String): Flow<Resource<List<TokenAccountWithMetadata>>>
+ fun fetchEligibleTokenAccounts(tokenOwner: String, orderId: String): Flow<Resource<List<TokenAccountWithMetadata>>>
  fun fetchAppId(): Flow<Resource<AppId>>
- fun createPromo(promo: PromoType, uri: Uri, memo: String?, payer: String, groupSeed: String): Flow<Resource<CreatePromoResult>>
+ fun createPromo(promo: PromoType, uri: Uri, memo: String?, payer: String, groupSeed: String): Flow<Resource<TxApiResponse>>
  fun signAndSend(transaction: String, keyPair: KeyPair): Flow<Resource<String>>
 }
