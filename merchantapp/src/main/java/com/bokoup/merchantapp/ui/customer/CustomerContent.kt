@@ -3,6 +3,8 @@ package com.bokoup.merchantapp.ui.customer
 import android.app.Activity
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -25,6 +27,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.delay
 import java.text.DecimalFormat
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 @ExperimentalMaterial3Api
 fun CustomerContent(
@@ -111,40 +114,57 @@ fun CustomerContent(
         if (qrCode == null) {
             if (tokenAccounts.isEmpty()) {
                 Text(
-                    text = "Didn't find any eligible offers in your wallet",
+                    text = "You don't appear to have any eligible offers",
                     style = MaterialTheme.typography.headlineLarge
                 )
             } else {
-                tokenAccountsMap.entries.map { (id, tokenAccount) ->
-                    Row(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp, vertical = 6.dp)
-                            .clickable { updateCheckedState(id) },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        AsyncImage(
-                            model = tokenAccount.image,
-                            modifier = Modifier.weight(0.2f),
-                            contentDescription = null
-                        )
-                        Text(
+                Row(
+                ) {
+                    tokenAccountsMap.values.map { tokenAccount ->
+                        Card(
                             modifier = Modifier
-                                .weight(0.4f)
-                                .padding(PaddingValues(start = 32.dp)),
-                            text = tokenAccount.description,
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Text(
-                            modifier = Modifier.weight(0.2f),
-                            textAlign = TextAlign.End,
-                            text = "$ ${DecimalFormat("#,###.##").format(tokenAccount.discount.toDouble() / 100)}",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Switch(modifier = Modifier.weight(0.2f),
-                            checked = tokenAccount.selected,
-                            onCheckedChange = { updateCheckedState(id) })
+                                .width(300.dp)
+                                .padding(32.dp)
+                                .clickable {
+                                    timestamp.value = (System.currentTimeMillis() / 1000).toInt()
+                                    viewModel.getQrCode(
+                                        orderId,
+                                        tokenAccount,
+                                        delegateString,
+                                        timestamp.value!!
+                                    )
+                                }
+                        ) {
+                            Column(
+                                modifier = modifier
+                                    .fillMaxHeight()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                                verticalArrangement = Arrangement.Top,
+                            ) {
+                                AsyncImage(
+                                    model = tokenAccount.image,
+                                    modifier = Modifier.padding(16.dp),
+                                    contentDescription = null
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .padding(PaddingValues(start = 32.dp)),
+                                    text = tokenAccount.description,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Divider(thickness = 1.dp, modifier = Modifier.padding(vertical=12.dp))
+                                Text(
+                                    textAlign = TextAlign.End,
+                                    text = "Tap to save $${
+                                        DecimalFormat("#,###.##").format(
+                                            tokenAccount.discount.toDouble() / 100
+                                        )
+                                    }!",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+
+                        }
                     }
                 }
             }
@@ -159,21 +179,15 @@ fun CustomerContent(
                         contentColor = MaterialTheme.colorScheme.surface
                     )
                 ) {
-                    Text("Decline", style = MaterialTheme.typography.headlineMedium)
-                }
-                Spacer(Modifier.width(16.dp))
-                Button(onClick = {
-                    timestamp.value = (System.currentTimeMillis() / 1000).toInt()
-                    viewModel.getQrCode(
-                        orderId, tokenAccountsMap.values.first { it.selected }, delegateString, timestamp.value!!
-                    )
-                }, enabled = tokenAccountsMap.values.any { it.selected }) {
-                    Text("Accept", style = MaterialTheme.typography.headlineMedium)
+                    Text("No Thanks!", style = MaterialTheme.typography.headlineMedium)
                 }
             }
         }
     }
-    AnimatedVisibility(qrCode != null) {
+    AnimatedVisibility(
+        qrCode != null,
+        enter = scaleIn()
+    ) {
         Column(
             modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -203,10 +217,6 @@ fun CustomerContent(
                     ) {
                         Text("Cancel", style = MaterialTheme.typography.headlineMedium)
                     }
-//                    Spacer(Modifier.width(16.dp))
-//                    Button(onClick = { viewModel.approve(activity) }) {
-//                        Text("Approve", style = MaterialTheme.typography.headlineMedium)
-//                    }
                 }
             }
         }

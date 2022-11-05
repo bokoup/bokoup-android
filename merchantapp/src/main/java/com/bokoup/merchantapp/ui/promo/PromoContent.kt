@@ -103,7 +103,6 @@ fun PromoContent(
                                     ).contains(it.asJsonObject["trait_type"].asString)
                                 }
 
-                            Log.d("PromoContent", attributes.toString())
                             ElevatedCard(
                                 modifier = Modifier
                                     .width(350.dp)

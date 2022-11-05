@@ -32,15 +32,15 @@ fun CreatePromoCard(
     createPromo: (promo: PromoType, uri: Uri, memo: String?, payer: String, groupSeed: String) -> Unit,
 ) {
     var name by remember {
-        mutableStateOf(TextFieldValue("name"))
+        mutableStateOf(TextFieldValue("Test Promo"))
     }
 
     var symbol by remember {
-        mutableStateOf(TextFieldValue("symbol"))
+        mutableStateOf(TextFieldValue("BTP"))
     }
 
     var description by remember {
-        mutableStateOf(TextFieldValue("description"))
+        mutableStateOf(TextFieldValue("This test promo gives you 10 percent off if you spend more than $1.00."))
     }
 
     var maxMint by remember {
@@ -72,7 +72,7 @@ fun CreatePromoCard(
     }
 
     var memo by remember {
-        mutableStateOf(TextFieldValue("memo"))
+        mutableStateOf(TextFieldValue("Created test promo for demo."))
     }
 
     var pickedImageUri by remember { mutableStateOf<Uri?>(null) }

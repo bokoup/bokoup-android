@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.bokoup.merchantapp.domain.SettingsRepo
-import com.bokoup.merchantapp.model.BurmDelegatedMemo
+import com.bokoup.merchantapp.model.BurnDelegatedMemo
 import com.bokoup.merchantapp.net.AccountData
 import com.bokoup.merchantapp.net.DataService
 import com.bokoup.merchantapp.net.TransactionService
@@ -57,7 +57,7 @@ class PaymentBroadcastReceiver : BroadcastReceiver() {
                 if (delegatedToken != null) {
                     val keyPair = settingsRepo.getKeyPair();
                     checkNotNull(keyPair) { "PublicKeyString was null" }
-                    val memo = BurmDelegatedMemo(
+                    val memo = BurnDelegatedMemo(
                         orderId = orderId,
                         paymentId = paymentId,
                         delegateSignature = delegatedToken.signature
