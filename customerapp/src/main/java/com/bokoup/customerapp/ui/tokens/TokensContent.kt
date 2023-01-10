@@ -44,7 +44,7 @@ fun TokensContent(
             tokenAccounts!!.data!!.tokenAccount.filter { it.owner == activeAddress && it.amount as Int > 0 }
                 .map { tokenAccount ->
                 val link =
-                    "https://explorer.solana.com/address/" + tokenAccount.mintObject?.id + "?cluster=custom&customUrl=http%3A%2F%2F99.91.8.130%3A8899"
+                    "https://explorer.solana.com/address/" + tokenAccount.mintObject?.id + "?cluster=devnet"
                 ElevatedCard(
                     modifier = Modifier
                         .width(284.dp)

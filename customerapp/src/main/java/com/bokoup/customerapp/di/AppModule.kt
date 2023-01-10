@@ -33,8 +33,8 @@ class AppModule() {
     @Provides
     fun apolloClient(
     ): ApolloClient = ApolloClient.Builder()
-        .serverUrl("https://shining-sailfish-15.hasura.app/v1/graphql")
-        .webSocketServerUrl("https://shining-sailfish-15.hasura.app/v1/graphql")
+        .serverUrl("https://data.api.bokoup.dev/v1/graphql")
+        .webSocketServerUrl("https://data.api.bokoup.dev/v1/graphql")
         .build()
 
     @Provides
@@ -73,7 +73,7 @@ class AppModule() {
 
     @Provides
     fun solanaApi(
-    ) = SolanaApi(Cluster.Custom("http://99.91.8.130:8899", "ws://99.91.8.130:8899"), OkHttpClient.Builder().apply {
+    ) = SolanaApi(Cluster.Custom("https://api.devnet.solana.com/", "wss://api.devnet.solana.com/"), OkHttpClient.Builder().apply {
         addInterceptor(interceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })

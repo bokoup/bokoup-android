@@ -17,7 +17,7 @@ class TransactionService {
         level = HttpLoggingInterceptor.Level.BODY
     }
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://99.91.8.130:8080/")
+        .baseUrl("https://tx.api.bokoup.dev/")
         .client(OkHttpClient.Builder().apply { addInterceptor(interceptor = interceptor) }.build())
         .addConverterFactory(GsonConverterFactory.create())
         .build()

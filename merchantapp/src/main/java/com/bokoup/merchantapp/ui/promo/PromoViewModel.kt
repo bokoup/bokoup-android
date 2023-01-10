@@ -10,9 +10,9 @@ import com.bokoup.lib.resourceFlowOf
 import com.bokoup.merchantapp.domain.PromoRepo
 import com.bokoup.merchantapp.domain.SettingsRepo
 import com.bokoup.merchantapp.model.AppId
-import com.bokoup.merchantapp.model.TxApiResponse
 import com.bokoup.merchantapp.model.PromoType
 import com.bokoup.merchantapp.model.PromoWithMetadata
+import com.bokoup.merchantapp.model.TxApiResponse
 import com.dgsd.ksol.core.model.KeyPair
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -56,7 +56,7 @@ class PromoViewModel @Inject constructor(
         qrCodeConsumer.collectFlow(
             resourceFlowOf {
                 val url = URL(
-                    "http://99.91.8.130:8080/promo/mint/$mintString/${
+                    "https://tx.api.bokoup.dev/promo/mint/$mintString/${
                         URLEncoder.encode(
                             message,
                             "utf-8"

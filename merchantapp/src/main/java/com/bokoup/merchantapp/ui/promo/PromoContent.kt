@@ -94,7 +94,7 @@ fun PromoContent(
                     ) {
                         it.map { promo ->
                             val link =
-                                "https://explorer.solana.com/address/" + promo.mintObject?.id + "?cluster=custom&customUrl=http%3A%2F%2F99.91.8.130%3A8899"
+                                "https://explorer.solana.com/address/" + promo.mintObject?.id + "?cluster=devnet"
                             val attributes =
                                 JsonParser().parse(Gson().toJson(promo.metadataObject?.attributes)).asJsonArray.filter {
                                     !listOf<String>(

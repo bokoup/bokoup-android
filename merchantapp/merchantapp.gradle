@@ -92,6 +92,7 @@ dependencies {
     implementation projects.lib
     kapt libs.bundles.kapt
     testImplementation libs.android.junit
+    testImplementation libs.bitcoinj
     testImplementation libs.roboelectric
 }
 
